@@ -1,4 +1,4 @@
-import CustomElement from "./lib/CustomElement.js";
+import CustomElement from "./lib/CustomElement2.js";
 
 class subEl extends CustomElement {
     constructor() {
@@ -30,6 +30,7 @@ export class DemoElement extends CustomElement {
 
         const shadowRoot = this.attachShadow({ mode: "open" });
         this.state = {
+            showCart: false,
             title: "lul",
             user: {
                 class: "color-red",
@@ -60,7 +61,7 @@ export class DemoElement extends CustomElement {
       
       <div id="container">
         <h1>hi <span data-bind="state.user.name" ></span></h1>
-        <h3 data-loop="item of state.pets"><div><p loop-item>hey</p></div><p>you</p></h3>
+        <h3 loop="item of state.pets"><div><p loop-item>hey</p></div><p>you</p></h3>
         <p data-bind="state.title" id="title"></p>
         
         <h3>user.name</h3>
@@ -75,6 +76,7 @@ export class DemoElement extends CustomElement {
             <input type="checkbox" name="yes">
             <button type="submit">send</button>
         </form>
+        <div if-bind="state.showCart">cart<div>items : 3</div></div>
       </div>
         `;
     }
@@ -84,11 +86,12 @@ export class DemoElement extends CustomElement {
     }
 
     onRender() {
+        /*
         this.setStateTitle("TITLKE");
         this.setStateUserAddressCity("LA");
         this.setStateUserName("wadaheck");
         this.setStateUserName("wadaheck2");
-        this.setStateUserClass("text-big");
+        this.setStateUserClass("text-big");*/
         this.setState(["state.user.name", "srmkhgzs"], ["state.user.class", "yes yes class"]);
     }
 
