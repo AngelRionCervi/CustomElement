@@ -61,7 +61,7 @@ export class DemoElement extends CustomElement {
       
       <div id="container">
         <h1>hi <span data-bind="state.user.name" ></span></h1>
-        <h3 loop="item of state.pets"><div><p loop-item>hey</p></div><p>you</p></h3>
+        <h3 loop="item of state.pets"><div><p loop-item>hey</p></div><p data-bind="state.title">you</p></h3>
         <p data-bind="state.title" id="title"></p>
         
         <h3>user.name</h3>
