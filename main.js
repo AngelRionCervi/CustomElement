@@ -8,7 +8,7 @@ class subEl extends CustomElement {
             is: "ok",
         };
 
-        shadowRoot.innerHTML = `<div data-bind="state.is"></div>`;
+        shadowRoot.innerHTML = `<div data-bind="is"></div>`;
     }
 
     onInit() {
@@ -17,7 +17,7 @@ class subEl extends CustomElement {
     }
 
     onRender() {
-        this.props.sayHi();
+        //this.props.sayHi();
         //console.log(this.getRootNode().host.shadowRoot.innerHTML)
     }
 }
@@ -31,7 +31,7 @@ export class DemoElement extends CustomElement {
         const shadowRoot = this.attachShadow({ mode: "open" });
         this.state = {
             showCart: false,
-            displayName: true,
+            displayName: false,
             displayTitle: true,
             title: "lul",
             user: {
@@ -95,10 +95,10 @@ export class DemoElement extends CustomElement {
         this.setStateUserName("wadaheck2");
         this.setStateUserClass("text-big");*/
         //this.setState(["state.displayName", true]);
-        this.setState(["displayTitle", true], ["displayName", false]);
-        this.setState("user.name", "exdeexd")
+        this.setState(["pets", [...this.state.pets, "leopard"]]);
+        //this.setState("user.name", "exdeexd")
         for (const o of this) {
-            console.log(o)
+            //console.log(o)
         }
     }
 
