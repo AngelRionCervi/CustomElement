@@ -95,7 +95,7 @@ export class DemoElement extends CustomElement {
         this.setStateUserName("wadaheck2");
         this.setStateUserClass("text-big");*/
         //this.setState(["state.displayName", true]);
-        this.setState(["pets", [...this.state.pets, "leopard"]]);
+        this.setState(["pets", [...this.state.pets, "leopard", "goat"]]);
         //this.setState("user.name", "exdeexd")
         for (const o of this) {
             //console.log(o)
