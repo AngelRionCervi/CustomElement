@@ -8,7 +8,7 @@ class subEl extends CustomElement {
             is: "ok",
         };
 
-        shadowRoot.innerHTML = `<div data-bind="state.is"></div>`;
+        shadowRoot.innerHTML = `<div data-bind="is"></div>`;
     }
 
     onInit() {
