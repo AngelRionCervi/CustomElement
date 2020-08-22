@@ -44,6 +44,7 @@ export class DemoElement extends CustomElement {
             rclass: "rezrzrzr",
             pets: ["z", "z", "fish"],
             cities: ["LA", "NY", "Chicago", "Houston", "Phoenix", "San Diego", "Dallas"],
+            lfs: ["skulk", "lerk"]
         };
 
         shadowRoot.innerHTML = `
@@ -67,21 +68,22 @@ export class DemoElement extends CustomElement {
       
       <div id="container">
         <h1>hi <span data-bind="displayName : user.name" ></span></h1>
-
-        <div loop="pet of pets"><p>that</p><p loop-item></p></div>
+        
+        <div loop="pet of pets"><p>that</p><p loop-item="pet"></p></div>
 
         <p data-bind="title" id="title"></p>
         
         <h3>user.name</h3>
         <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
 
-        <div loop="city of cities"><div><span>city : </span><span loop-item></span></div></div>
-
+        <div loop="city of cities"><div loop="lf of lfs"><p loop-item="lf"></p></div><div><span data-bind="user.address.city"></span><span> : </span><span loop-item="city"></span></div></div>
+      
+     
         <h3 class-bind="user.class">user.address.city</h3>
         <p on-mouseover="hoveredP" data-bind="user.address.city" id="city"></p>
 
         <h3 ref="h3title" on-click="clickedH3" data-bind="title"></h3>
-        
+
         <form on-submit="submitthatform">
             <input type="checkbox" name="yes">
             <button type="submit">send</button>
