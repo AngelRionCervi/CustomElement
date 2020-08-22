@@ -47,7 +47,7 @@ export class DemoElement extends CustomElement {
             lfs: ["skulk", "lerk"]
         };
 
-        shadowRoot.innerHTML = `
+        shadowRoot.innerHTML = /* html */ `
         <style>
             .color-red {
                 color: red;
@@ -68,17 +68,18 @@ export class DemoElement extends CustomElement {
       
       <div id="container">
         <h1>hi <span data-bind="displayName : user.name" ></span></h1>
-        
-        <div loop="pet of pets"><p>that</p><p loop-item="pet"></p></div>
 
         <p data-bind="title" id="title"></p>
         
         <h3>user.name</h3>
         <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
 
-        <div loop="city of cities"><div loop="lf of lfs"><p loop-item="lf"></p></div><div><span data-bind="user.address.city"></span><span> : </span><span loop-item="city"></span></div></div>
-      
-     
+        
+            
+        <div loop="lf of lfs">
+            <div loop="lf2 of lfs"><span loop-item="lf2"></span><span> </span><span data-bind="user.lastname"></span><span> </span></div>
+        </div>
+ 
         <h3 class-bind="user.class">user.address.city</h3>
         <p on-mouseover="hoveredP" data-bind="user.address.city" id="city"></p>
 
