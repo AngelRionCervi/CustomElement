@@ -31,7 +31,7 @@ export class DemoElement extends CustomElement {
         this.state = {
             showCart: true,
             displayName: false,
-            displayTitle: true,
+            displayTitle: false,
             title: "lul",
             user: {
                 class: "color-red",
@@ -75,6 +75,7 @@ export class DemoElement extends CustomElement {
         <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
             
         <div loop="pet of pets">
+            <p>{{user.name}} {{user.lastname}}</p>
             <div loop="lf2 of lfs"><span if-bind="showCart">cart<div>items : 3</div></span><span loop-item="lf2"></span><span> </span><span class-bind="displayName : color-red" data-bind="user.lastname"></span><span> </span></div>
         </div>
  
@@ -88,7 +89,7 @@ export class DemoElement extends CustomElement {
             <button type="submit">send</button>
         </form>
         
-        <div if-bind="showCart">{{user.lastname}}</div>
+        
       </div>
         `;
     }
