@@ -26,7 +26,7 @@ customElements.define("sub-el", subEl);
 export class DemoElement extends CustomElement {
     constructor() {
         super();
-
+        this.performance = 0;
         const shadowRoot = this.attachShadow({ mode: "open" });
         this.state = {
             showCart: true,
@@ -74,8 +74,8 @@ export class DemoElement extends CustomElement {
         <h3>user.name {{title}}</h3>
         <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
             
-        <div loop="lf of lfs">
-            <div loop="lf2 of lfs"><span loop-item="lf2"></span><span> </span><span data-bind="user.lastname"></span><span> </span></div>
+        <div loop="pet of pets">
+            <div loop="lf2 of lfs"><span loop-item="lf2"></span><span> </span><span class-bind="displayName : color-red" data-bind="user.lastname"></span><span> </span></div>
         </div>
  
         <h3 class-bind="user.class">user.address.city</h3>
@@ -93,6 +93,10 @@ export class DemoElement extends CustomElement {
         `;
     }
 
+    beforeInit() {
+        this.performance = Date.now();
+    }
+
     onRender() {
         /*
         this.setStateTitle("TITLKE");
@@ -101,13 +105,12 @@ export class DemoElement extends CustomElement {
         this.setStateUserName("wadaheck2");
         this.setStateUserClass("text-big");*/
         //this.setState(["state.displayName", true]);
-        this.setState(["pets", [...this.state.pets, "leopard"]]);
+        this.setState(["pets", [...this.state.pets, "leopard", "lion", "some animal"]]);
         //this.setState("pets", [...this.state.pets.filter((el) => el !== "goat")]);
         this.setState("cities", [...this.state.cities.filter((el) => el !== "Houston" && el !== "Phoenix"), "SA", "Paris"]);
-        //this.setState("user.name", "exdeexd")
-        for (const o of this) {
-            //console.log(o)
-        }
+        this.setState("displayName", true)
+        this.performance = Date.now() - this.performance;
+        console.log("rendering time : " + this.performance + " ms")
     }
 
     sayHi() {
