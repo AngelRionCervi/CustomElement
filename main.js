@@ -71,11 +71,11 @@ export class DemoElement extends CustomElement {
 
         <p data-bind="title" id="title"></p>
         
-        <h3>user.name {{title}}</h3>
+        <h3>user.name {{user.name}} {{user.lastname}}</h3>
         <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
             
         <div loop="pet of pets">
-            <div loop="lf2 of lfs"><span loop-item="lf2"></span><span> </span><span class-bind="displayName : color-red" data-bind="user.lastname"></span><span> </span></div>
+            <div loop="lf2 of lfs"><span if-bind="showCart">cart<div>items : 3</div></span><span loop-item="lf2"></span><span> </span><span class-bind="displayName : color-red" data-bind="user.lastname"></span><span> </span></div>
         </div>
  
         <h3 class-bind="user.class">user.address.city</h3>
@@ -88,7 +88,7 @@ export class DemoElement extends CustomElement {
             <button type="submit">send</button>
         </form>
         
-        <div if-bind="showCart">cart<div>items : 3</div></div>
+        <div if-bind="showCart">{{user.lastname}}</div>
       </div>
         `;
     }
@@ -109,6 +109,7 @@ export class DemoElement extends CustomElement {
         //this.setState("pets", [...this.state.pets.filter((el) => el !== "goat")]);
         this.setState("cities", [...this.state.cities.filter((el) => el !== "Houston" && el !== "Phoenix"), "SA", "Paris"]);
         this.setState("displayName", true)
+        this.setState(["pets", [...this.state.pets.filter((el) => el !== "lion")]]);
         this.performance = Date.now() - this.performance;
         console.log("rendering time : " + this.performance + " ms")
     }
