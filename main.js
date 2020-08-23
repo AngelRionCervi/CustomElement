@@ -71,7 +71,7 @@ export class DemoElement extends CustomElement {
 
         <p data-bind="title" id="title"></p>
         
-        <h3>user.name</h3>
+        <h3>user.name {{title}}</h3>
         <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
 
         
