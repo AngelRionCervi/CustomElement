@@ -109,8 +109,11 @@ export class DemoElement extends CustomElement {
         this.setState(["pets", [...this.state.pets, "leopard", "lion", "some animal"]]);
         //this.setState("pets", [...this.state.pets.filter((el) => el !== "goat")]);
         this.setState("cities", [...this.state.cities.filter((el) => el !== "Houston" && el !== "Phoenix"), "SA", "Paris"]);
-        this.setState("displayName", true)
+        
         this.setState(["pets", [...this.state.pets.filter((el) => el !== "lion")]]);
+        this.setState(["displayName", true])
+     
+    
         this.performance = Date.now() - this.performance;
         console.log("rendering time : " + this.performance + " ms")
     }
