@@ -75,9 +75,9 @@ export class DemoElement extends CustomElement {
         <h3>user.name {{user.name}} {{user.lastname}}</h3>
         <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
 
-        <span if-bind="displayName">lol</span>
+        
             
-        <div loop="city of cities"><div loop="lf of lfs"><p loop-item="lf"></p></div><div><span class-bind="displayName : color-red" data-bind="user.address.city"></span><span> {{ user.separator }} </span><span loop-item="city"></span></div></div>
+        <div loop="city of cities"><div loop="lf of lfs"><p loop-item="lf"></p></div><div><span if-bind="displayName">lol</span><span class-bind="displayName : color-red" data-bind="user.address.city"></span><span> {{ user.separator }} </span><span loop-item="city"></span></div></div>
  
         <h3 class-bind="user.class">user.address.city</h3>
         <p on-mouseover="hoveredP" data-bind="user.address.city" id="city"></p>
