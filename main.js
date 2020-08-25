@@ -30,7 +30,7 @@ export class DemoElement extends CustomElement {
         const shadowRoot = this.attachShadow({ mode: "open" });
         this.state = {
             showCart: true,
-            displayName: false,
+            displayName: true,
             displayTitle: false,
             title: "lul",
             user: {
@@ -43,7 +43,7 @@ export class DemoElement extends CustomElement {
             },
             rclass: "rezrzrzr",
             pets: ["z", "z", "fish"],
-            cities: ["LA", "NY", "Chicago", "Houston", "Phoenix", "San Diego", "Dallas"],
+            cities: ["LA", "NY"],
             lfs: ["skulk", "lerk"]
         };
 
@@ -76,7 +76,7 @@ export class DemoElement extends CustomElement {
             
         <div loop="pet of pets">
             <p>{{user.name}} {{user.lastname}}</p>
-            <div loop="lf2 of lfs"><span if-bind="showCart">cart<div>items : 3</div></span><span loop-item="lf2"></span><span> </span><span class-bind="displayName : color-red" data-bind="user.lastname"></span><span> </span></div>
+            <span loop="city of cities"><p>yo</p></span>
         </div>
  
         <h3 class-bind="user.class">user.address.city</h3>
@@ -106,11 +106,13 @@ export class DemoElement extends CustomElement {
         this.setStateUserName("wadaheck2");
         this.setStateUserClass("text-big");*/
         //this.setState(["state.displayName", true]);
-        this.setState(["pets", [...this.state.pets, "leopard", "lion", "some animal"]]);
+         //this.setState(["pets", [...this.state.pets, "lol"]]);
+        // this.setState(["pets", [...this.state.pets, "some animal lol", "roflolmao"]]);
+        // this.setState(["pets", [...this.state.pets]]);
+        // this.setState(["cities", [...this.state.cities, "BIG CITY", "ANOTHER BIG CITY"]]);
         //this.setState("pets", [...this.state.pets.filter((el) => el !== "goat")]);
-        this.setState("cities", [...this.state.cities.filter((el) => el !== "Houston" && el !== "Phoenix"), "SA", "Paris"]);
-        this.setState("displayName", true)
-        this.setState(["pets", [...this.state.pets.filter((el) => el !== "lion")]]);
+        //this.setState("cities", [...this.state.cities.filter((el) => el !== "Houston" && el !== "Phoenix"), "SA", "Paris"]);
+
         this.performance = Date.now() - this.performance;
         console.log("rendering time : " + this.performance + " ms")
     }
