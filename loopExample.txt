@@ -1,1 +1,6 @@
 <div loop="city of cities"><div loop="lf of lfs"><p loop-item="lf"></p></div><div><span data-bind="user.address.city"></span><span> : </span><span loop-item="city"></span></div></div>
+
+ <div loop="pet of pets">
+            <p>{{user.name}} {{user.lastname}}</p>
+            <div loop="lf2 of lfs"><span if-bind="showCart">cart<div>items : 3</div></span><span loop-item="lf2"></span><span> </span><span class-bind="displayName : color-red" data-bind="user.lastname"></span><span> </span></div>
+        </div>
