@@ -1,96 +1,33 @@
-import CustomElement from "./lib/CustomElement2.js";
+import EZC from "./lib/EZC.js";
 
-class subEl extends CustomElement {
+class EZCTest extends EZC {
     constructor() {
         super();
         const shadowRoot = this.attachShadow({ mode: "open" });
         this.state = {
-            is: "ok",
+            showOk: true,
+            showLast: true,
+            showLastest: true,
+            ties: ["red", "blue"],
+            fruits: ["strawberry", "mango"]
         };
-
-        shadowRoot.innerHTML = `<div data-bind="is"></div>`;
-    }
-
-    onInit() {
-        //console.log(this.dispatchEvent)
-    }
-
-    onRender() {
-        //this.props.sayHi();
-        //console.log(this.getRootNode().host.shadowRoot.innerHTML)
-    }
-}
-
-customElements.define("sub-el", subEl);
-
-export class DemoElement extends CustomElement {
-    constructor() {
-        super();
         this.performance = 0;
-        const shadowRoot = this.attachShadow({ mode: "open" });
-        this.state = {
-            showCart: true,
-            displayName: true,
-            displayTitle: false,
-            title: "lul",
-            user: {
-                class: "color-red",
-                name: "A name",
-                lastname: "rc",
-                address: {
-                    city: "A CITY",
-                },
-            },
-            rclass: "rezrzrzr",
-            pets: ["z", "z", "fish"],
-            cities: ["LA", "NY"],
-            lfs: ["skulk", "lerk"]
-        };
 
-        shadowRoot.innerHTML = /* html */ `
-        <style>
-            .color-red {
-                color: red;
-            }
-            .underline {
-                text-decoration: underline;
-            }
-            .text-big {
-                font-size: 5em;
-            }
-            .dtitle {
-                font-size: 500%;
-            }
-        </style>
-      <template id="template">
-        <p id="template-content">This is the content of the template</p>
-      </template>
-      
-      <div id="container">
-        <h1>hi <span data-bind="displayName : user.name" ></span></h1>
-
-        <p data-bind="title" id="title"></p>
-        
-        <h3>user.name {{user.name}} {{user.lastname}}</h3>
-        <h2 data-bind="user.name" class-bind="displayName : color-red, displayTitle: dtitle, rclass" class="underline random-class" id="name"></h2>
-            
-        <div loop="pet of pets">
-            <p>{{user.name}} {{user.lastname}}</p>
-            <span loop="city of cities"><p>yo</p></span>
-        </div>
- 
-        <h3 class-bind="user.class">user.address.city</h3>
-        <p on-mouseover="hoveredP" data-bind="user.address.city" id="city"></p>
-
-        <h3 ref="h3title" on-click="clickedH3" data-bind="title"></h3>
-
-        <form on-submit="submitthatform">
-            <input type="checkbox" name="yes">
-            <button type="submit">send</button>
-        </form>
-        
-        
-      </div>
+        shadowRoot.innerHTML = /* html */`
+            <div loop="fruit of fruits">
+                hi
+                <div if="showOk">
+                    -<div loop="tie of ties">
+                        <div if="showLast">
+                            ~<div loop="fr of fruits">
+                                <p loop-item="fr"></p>
+                                <p if="showLastest">lastest</p>
+                            </div>
+                        </div>
+                    </div>
+                ok
+                </div>
+            </div>
         `;
     }
 
@@ -98,52 +35,20 @@ export class DemoElement extends CustomElement {
         this.performance = Date.now();
     }
 
+    onInit() {
+        //console.log(this.dispatchEvent)
+    }
+
     onRender() {
-        /*
-        this.setStateTitle("TITLKE");
-        this.setStateUserAddressCity("LA");
-        this.setStateUserName("wadaheck");
-        this.setStateUserName("wadaheck2");
-        this.setStateUserClass("text-big");*/
-        //this.setState(["state.displayName", true]);
-         //this.setState(["pets", [...this.state.pets, "lol"]]);
-        // this.setState(["pets", [...this.state.pets, "some animal lol", "roflolmao"]]);
-        // this.setState(["pets", [...this.state.pets]]);
-        // this.setState(["cities", [...this.state.cities, "BIG CITY", "ANOTHER BIG CITY"]]);
-        //this.setState("pets", [...this.state.pets.filter((el) => el !== "goat")]);
-        //this.setState("cities", [...this.state.cities.filter((el) => el !== "Houston" && el !== "Phoenix"), "SA", "Paris"]);
-
+        this.setState("fruits", [...this.state.fruits]);
+        this.setState("ties", [...this.state.ties, "green"]);
+        this.setState("showOk", true)
+        this.setState("showLast", true)
+        this.setState("showLastest", false)
+        this.setState("fruits", [...this.state.fruits]);
         this.performance = Date.now() - this.performance;
-        console.log("rendering time : " + this.performance + " ms")
-    }
-
-    sayHi() {
-        console.log("hi");
-    }
-
-    clickedH3(evt) {
-        evt.preventDefault();
-        console.log("wadup", evt);
-    }
-
-    hoveredP(evt) {
-        evt.preventDefault();
-        console.log("hover", evt);
-    }
-
-    submitthatform(evt) {
-        evt.preventDefault();
-        console.log("submit", Object.fromEntries(new FormData(evt.target)));
-    }
-
-    downdown(evt) {
-        console.log("mousedown sub-el", evt);
-    }
-
-    upup(evt) {
-        console.log("mouseup sub-el", evt);
-        console.log(this.refs);
+        console.log(`rendering time : ${this.performance}`);
     }
 }
 
-customElements.define("demo-element", DemoElement);
+customElements.define("loop-test", EZCTest);
