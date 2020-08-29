@@ -14,30 +14,17 @@ class EZCTest extends EZC {
         this.performance = 0;
 
         shadowRoot.innerHTML = /* html */`
-            <div loop="fruit of fruits">
+            <div if="showLastest">
                 hi
                 <div if="showOk">
                     -<div loop="tie of ties">
-                        <div if="showLast">
-                            ~<div loop="fr of fruits">
-                                <p loop-item="fr"></p>
-                                <div if="showLastest">LASTEST
-                                     ~<div loop="fr of fruits">
-                                        <p loop-item="fr"></p>
-                                        <p if="showLastest">lastest</p>
-                                        <p if="showOk">okok</p>
-                                    </div>
-                                </div>
-                            </div>
-                            ~<div loop="fr of fruits">
-                                <p loop-item="fr"></p>
-                                <p if="showLastest">lastest</p>
-                            </div>
-                            ~<div loop="fr of fruits">
-                                <p loop-item="fr"></p>
-                                <p if="showLastest">lastest</p>
-                            </div>
-                        </div>
+                        <div loop-item="tie"></div>
+                    </div>
+                ok
+                </div>
+                <div if="showLast">
+                    -<div loop="tie of fruits">
+                        <div loop-item="tie"></div>
                     </div>
                 ok
                 </div>
@@ -57,7 +44,7 @@ class EZCTest extends EZC {
         this.setState("fruits", [...this.state.fruits]);
         this.setState("ties", [...this.state.ties, "green"]);
         this.setState("showOk", true)
-        this.setState("showLast", true)
+        this.setState("showLast", false)
         this.setState("showLastest", true)
         this.setState("fruits", [...this.state.fruits]);
         this.performance = Date.now() - this.performance;
