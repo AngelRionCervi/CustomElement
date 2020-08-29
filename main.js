@@ -16,9 +16,9 @@ class EZCTest extends EZC {
         shadowRoot.innerHTML = /* html */`
             <div if="showLastest">
                 hi
-                <div if="showOk">
+                <div if="!showOk">
                     -<div loop="tie of ties">
-                        <div loop-item="tie"></div>
+                        <p loop-item="tie"></p>
                     </div>
                 ok
                 </div>
@@ -43,7 +43,7 @@ class EZCTest extends EZC {
     onRender() {
         this.setState("fruits", [...this.state.fruits]);
         this.setState("ties", [...this.state.ties, "green"]);
-        this.setState("showOk", true)
+        this.setState("showOk", false)
         this.setState("showLast", false)
         this.setState("showLastest", true)
         this.setState("fruits", [...this.state.fruits]);
