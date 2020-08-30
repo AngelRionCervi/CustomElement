@@ -27,14 +27,11 @@ const state = {
     maybe: "maybe",
     maybe2: "maybe",
     yes2: "yes",
-    n1: 1+1,
+    n1: 1 + 1,
     empty: "",
     zero: 0,
 };
 
-const cond = "showMenu || isFirst && showLatest || that";
-const cond1b = "(showMenu || isFirst) && (showLatest || that)";
-const cond2 = "false || isFirst && showLatest || that && false";
 
 const tests = [
     { str: "(showMenu || isFirst) && (showLatest || that)", assert: false },
@@ -48,44 +45,33 @@ const tests = [
     { str: "(two !== threeb && threeb !== three) || yes === yes2", assert: true },
     { str: "(two !== threeb && threeb !== three) || yes === yes2 && that && yes2", assert: true },
     { str: "n1 && yes && yes2 && huhu && maybe && (empty || !zero)", assert: true },
+    { str: "yes2 !== n1 === !zero", assert: false }, // doesn't work
+    { str: "!!three === !!zero", assert: true }, // double !! doesn't work
 ];
 
 // takes none scoped if statement as string and outputs a bool result
+
+const getVal = (obj, path) => {
+    const res = resolvePath(obj, path.trim().replace("!", ""));
+    return path.trim()[0] === "!" ? !res : res;
+};
+
 const ifParser = (str) => {
     const groups = splitTrim(str, "||").map((s) => splitTrim(s, "&&"));
     return groups.reduce((or, group) => {
         return or
             ? or
             : group.reduce((and, cond) => {
-                  let val;
+                  if (cond === "true") return and === true;
+                  let res = getVal(state, cond);
                   if (cond.includes("===")) {
-                      const [s1, s2] = splitTrim(cond, "===");
-                      const [i1, i2] = [s1, s2].map((e) => e[0] === "!");
-                      const r1 = i1 ? !resolvePath(state, s1) : resolvePath(state, s1);
-                      const r2 = i2 ? !resolvePath(state, s2) : resolvePath(state, s2);
-                      if (r1 === r2) {
-                          val = true;
-                      } else {
-                          val = false;
-                      }
+                      const [r1, r2] = splitTrim(cond, "===").map((path) => getVal(state, path));
+                      res = r1 === r2;
                   } else if (cond.includes("!==")) {
-                      const [s1, s2] = splitTrim(cond, "!==");
-                      const [i1, i2] = [s1, s2].map((e) => e[0] === "!");
-                      const r1 = i1 ? !resolvePath(state, s1) : resolvePath(state, s1);
-                      const r2 = i2 ? !resolvePath(state, s2) : resolvePath(state, s2);
-                      if (r1 !== r2) {
-                          val = true;
-                      } else {
-                          val = false;
-                      }
-                  } else {
-                      val = resolvePath(state, cond.replace("!", ""));
-                      if (cond[0] === "!") val = !val;
+                      const [r1, r2] = splitTrim(cond, "!==").map((path) => getVal(state, path));
+                      res = r1 !== r2;
                   }
-
-                  //const val = cond[0] === "!" ? !resolvePath(state, cond) : resolvePath(state, cond);
-                  const res = cond === "true" ? true : !!val;
-                  return and ? res : false;
+                  return and === !!res;
               }, true);
     }, false);
 };
@@ -103,13 +89,23 @@ const scopedParser = (str) => {
     return ifParser(str);
 };
 
-tests.forEach((test) => {
-    if (test.assert === scopedParser(test.str)) {
-        console.log("good");
-    } else {
-        console.log(scopedParser(test.str))
-        console.log("not good :(");
-    }
-});
 
-//console.log(state.showMenu || state.showLatest && state.isFirst)
+const tester = (times, tests) => {
+    let time1 = Date.now();
+    let goodCount = 0;
+    for (let u = 0; u < times; u++) {
+        tests.forEach((test) => {
+            if (test.assert === scopedParser(test.str)) {
+                goodCount++;
+            } else {
+                console.log("---shit---");
+                console.log(scopedParser(test.str));
+                console.log("----------")
+            }
+        });
+    }
+    console.log(`tests done ${goodCount}/${tests.length*times} in ${Date.now() - time1} ms`);
+}
+
+tester(1, tests);
+
