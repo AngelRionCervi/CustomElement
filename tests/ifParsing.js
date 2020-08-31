@@ -11,6 +11,17 @@ const splitTrim = (string, separator) => {
     return string.split(separator).map((e) => e.trim());
 };
 
+const indexOfRegex = (arr, regex, last = false) => {
+    let res;
+    for (let u = 0; u < arr.length; u++) {
+        if (regex.test(arr[u])) {
+            res = u;
+            if (!last) break;
+        }
+    }
+    return res;
+};
+
 const state = {
     that: true,
     huhu: true,
@@ -28,9 +39,10 @@ const state = {
     n1: 1 + 1,
     empty: "",
     zero: 0,
+    dot5: 1.5,
 };
 
-"two + 1 + 'string'"
+("two + 1 + 'string'");
 /*
     types would be :
     var
@@ -105,9 +117,7 @@ const tests = [
     },
 ];
 
-const tests2 = [
-    { str: "1 + 1 === two", assert: true },
-]
+const tests2 = [{ str: "1 + 1 * 1 * 2 - 1 === 2", assert: true }];
 
 /// package ///
 const innerMostRegex = /\(([^()]*)\)/g;
@@ -128,16 +138,67 @@ const DIV = "/";
 const EXP = "**";
 const MODULO = "%";
 const comparisonRegexp = new RegExp(`(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`);
-const arithmeticRegexp = new RegExp(`([${PLUS}|${MINUS}|${MULT}|${DIV}|${EXP}|${MODULO}])`);
+const arithmeticRegexp = /([+|\-|*|\/|**|%])/;
+const arithmeticPriorityRegexp = /([*|\/|**|%])/;
 const stringRegexp = /(['])((\\{2})*|(.*?[^\\](\\{2})*))\1/;
+const numberRegexp = /^-?\d+\.?\d*$/;
 
 const getVal = (obj, exp) => {
-    const split = splitTrim(exp, arithmeticRegexp);
+    let split = splitTrim(exp, arithmeticRegexp);
+    console.log(split)
     const values = split.filter((e) => !arithmeticRegexp.test(e));
-    const operators = split.filter((e) => arithmeticRegexp.test(e));
-    console.log(values, operators, split)
+    let operators = split.filter((e) => arithmeticRegexp.test(e));
+    split.forEach((v, i, a) => {
+        if (numberRegexp.test(v)) {
+            a[i] = parseFloat(v);
+        }
+        if (!numberRegexp.test(v) && !stringRegexp.test(v) && !arithmeticRegexp.test(v)) {
+            console.log("AAAAA", v)
+            a[i] = resolvePath(state, v);
+        }
+    });
+    let nextOp = indexOfRegex(split, arithmeticPriorityRegexp, true);
+    if (!nextOp) {
+        nextOp = indexOfRegex(split, arithmeticRegexp, true);
+    }
+    console.log(split);
+    while (nextOp) {
+        let res;
+        const [n1, op, n2] = [split[nextOp - 1], split[nextOp], split[nextOp + 1]];
+        console.log(n1, n2);
+        switch (op) {
+            case PLUS:
+                res = n1 + n2;
+                break;
+            case MINUS:
+                res = n1 - n2;
+                break;
+            case MULT:
+                res = n1 * n2;
+                break;
+            case DIV:
+                res = n1 / n2;
+                break;
+            case EXP:
+                res = n1 ** n2;
+                break;
+            case MODULO:
+                res = n1 % n2;
+                break;
+        }
+        split.splice(nextOp - 1, 3, res);
+        //split.push(res)
+        nextOp = indexOfRegex(split, arithmeticPriorityRegexp, true);
+        if (!nextOp) {
+            nextOp = indexOfRegex(split, arithmeticRegexp, true);
+        }
+        // console.log(split)
+    }
+
+    console.log("lastsplit", split);
     const notMatches = (exp.match(notNumberRegex) || []).join();
-    const res = resolvePath(obj, exp.trim().replace(notMatches, ""));
+    //const res = resolvePath(obj, exp.trim().replace(notMatches, ""));
+    const res = split[0];
     return notMatches.length % 2 === 0 ? res : !res;
 };
 
@@ -200,13 +261,13 @@ const tester = (times, tests) => {
             if (!!test.assert === !!scopedParser(test.str)) {
                 goodCount++;
             } else {
-                // console.log("---shit---");
-                // console.log(`test ${index} failed, ${!!scopedParser(test.str)}`);
-                // console.log("----------");
+                console.log("---shit---");
+                console.log(`test ${index} failed, ${!!scopedParser(test.str)}`);
+                console.log("----------");
             }
         });
     }
-    //console.log(`tests done ${goodCount}/${tests.length * times} in ${Date.now() - time1} ms`);
+    console.log(`tests done ${goodCount}/${tests.length * times} in ${Date.now() - time1} ms`);
 };
 
 tester(1, tests2);
