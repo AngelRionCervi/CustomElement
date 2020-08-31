@@ -31,21 +31,63 @@ const state = {
 };
 
 const tests = [
-    { str: "(showMenu || isFirst) && (showLatest || that)", assert: (state.showMenu || state.isFirst) && (state.showLatest || state.that) },
-    { str: "(showMenu || isFirst) || (!showLatest || that)", assert: (state.showMenu || state.isFirst) || (!state.showLatest || state.that) },
-    { str: "(showMenu || isFirst) || (!zero && that)", assert: (state.showMenu || state.isFirst) || (!state.zero && state.that) },
-    { str: "(!showMenu && !isFirst) && (showLatest || that)", assert: (!state.showMenu && !state.isFirst) && (state.showLatest || state.that) },
-    { str: "showMenu || isFirst && showLatest || that", assert: state.showMenu || state.isFirst && state.showLatest || state.that },
+    {
+        str: "(showMenu || isFirst) && (showLatest || that)",
+        assert: (state.showMenu || state.isFirst) && (state.showLatest || state.that),
+    },
+    {
+        str: "n1 >= two && no > yes",
+        assert: state.n1 >= state.two && state.no > state.yes,
+    },
+    {
+        str: "(showMenu || isFirst) || (!showLatest || that)",
+        assert: state.showMenu || state.isFirst || !state.showLatest || state.that,
+    },
+    {
+        str: "(showMenu || isFirst) || (!zero && that)",
+        assert: state.showMenu || state.isFirst || (!state.zero && state.that),
+    },
+    {
+        str: "(!showMenu && !isFirst) && (showLatest || that)",
+        assert: !state.showMenu && !state.isFirst && (state.showLatest || state.that),
+    },
+    {
+        str: "showMenu || isFirst && showLatest || that",
+        assert: state.showMenu || (state.isFirst && state.showLatest) || state.that,
+    },
     { str: "showLatest && huhu && !isFirst", assert: state.showLatest && state.huhu && !state.isFirst },
-    { str: "(showMenu || (showLatest || huhu)) || isFirst", assert: (state.showMenu || (state.showLatest || state.huhu)) || state.isFirst },
-    { str: "isFirst || (showMenu || (that && (huhu || isFirst)))", assert: state.isFirst || (state.showMenu || (state.that && (state.huhu || state.isFirst))) },
+    {
+        str: "(showMenu || (showLatest || huhu)) || isFirst",
+        assert: state.showMenu || state.showLatest || state.huhu || state.isFirst,
+    },
+    {
+        str: "isFirst || (showMenu || (that && (huhu || isFirst)))",
+        assert: state.isFirst || state.showMenu || (state.that && (state.huhu || state.isFirst)),
+    },
     { str: "three !== threeb && two !== three", assert: state.three !== state.threeb && state.two !== state.three },
     { str: "two !== threeb && threeb === three", assert: state.two !== state.threeb && state.threeb === state.three },
-    { str: "(two !== threeb && threeb !== three) || yes === yes2", assert: (state.two !== state.threeb && state.threeb !== state.three) || state.yes === state.yes2 },
-    { str: "(two !== threeb && threeb !== three) || yes === yes2 && that && yes2", assert: (state.two !== state.threeb && state.threeb !== state.three) || state.yes === state.yes2 && state.that && state.yes2 }, // realisticaly outputs "yes", a truthly value
-    { str: "n1 && yes && yes2 && huhu && maybe && (empty || !!!zero)", assert: state.n1 && state.yes && state.yes2 && state.huhu && state.maybe && (state.empty || !state.zero) },
+    {
+        str: "(two !== threeb && threeb !== three) || yes === yes2",
+        assert: (state.two !== state.threeb && state.threeb !== state.three) || state.yes === state.yes2,
+    },
+    {
+        str: "(two !== threeb && threeb !== three) || yes === yes2 && that && yes2",
+        assert:
+            (state.two !== state.threeb && state.threeb !== state.three) ||
+            (state.yes === state.yes2 && state.that && state.yes2),
+    }, // realisticaly outputs "yes", a truthly value
+    {
+        str: "n1 && yes && yes2 && huhu && maybe && (empty || !!!zero)",
+        assert: state.n1 && state.yes && state.yes2 && state.huhu && state.maybe && (state.empty || !state.zero),
+    },
     { str: "!!three === !!zero", assert: !!state.three === !!state.zero },
-    { str: "(maybe === maybe2 && !zero !== !empty || yes && n1 === two) || zero", assert: (state.maybe === state.maybe2 && !state.zero !== !state.empty || state.yes && state.n1 === state.two) || state.zero },
+    {
+        str: "(maybe === maybe2 && !zero !== !empty || yes && n1 === two) || zero",
+        assert:
+            (state.maybe === state.maybe2 && !state.zero !== !state.empty) ||
+            (state.yes && state.n1 === state.two) ||
+            state.zero,
+    },
 ];
 
 /// package ///
@@ -56,6 +98,11 @@ const OR = "||";
 const NOT = "!";
 const EQUAL = "===";
 const NOT_EQUAL = "!==";
+const MORE = ">";
+const LESS = "<";
+const MORE_OR_EQUAL = ">=";
+const LESS_OR_EQUAL = "<=";
+const comparisonRegexp = new RegExp(`(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`);
 
 const getVal = (obj, path) => {
     const notMatches = (path.match(notNumberRegex) || []).join();
@@ -72,12 +119,27 @@ const ifParser = (str) => {
             : group.reduce((and, cond) => {
                   if (cond === "true") return and === true;
                   let res = getVal(state, cond);
-                  if (cond.includes(EQUAL)) {
-                      const [r1, r2] = splitTrim(cond, EQUAL).map((path) => getVal(state, path));
-                      res = r1 === r2;
-                  } else if (cond.includes(NOT_EQUAL)) {
-                      const [r1, r2] = splitTrim(cond, NOT_EQUAL).map((path) => getVal(state, path));
-                      res = r1 !== r2;
+                  const symbolMatch = cond.match(comparisonRegexp)?.[0];
+                  const [r1, r2] = splitTrim(cond, symbolMatch).map((path) => getVal(state, path));
+                  switch (symbolMatch) {
+                      case EQUAL:
+                          res = r1 === r2;
+                          break;
+                      case NOT_EQUAL:
+                          res = r1 !== r2;
+                          break;
+                      case MORE:
+                          res = r1 > r2;
+                          break;
+                      case LESS:
+                          res = r1 < r2;
+                          break;
+                      case MORE_OR_EQUAL:
+                          res = r1 >= r2;
+                          break;
+                      case LESS_OR_EQUAL:
+                          res = r1 <= r2;
+                          break;
                   }
                   return and === !!res;
               }, true);
