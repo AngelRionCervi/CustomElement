@@ -8,13 +8,15 @@ class EZCTest extends EZC {
             showOk: true,
             showLast: true,
             showLastest: true,
+            one: 1,
+            two: 2,
             ties: ["red", "blue"],
             fruits: ["strawberry", "mango"]
         };
         this.performance = 0;
 
         shadowRoot.innerHTML = /* html */`
-            <div if="showLastest">
+            <div if="two > one">
                 hi
                 <div if="!showOk">
                     -<div loop="tie of ties">
@@ -41,12 +43,8 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-        this.setState("fruits", [...this.state.fruits]);
-        this.setState("ties", [...this.state.ties, "green"]);
         this.setState("showOk", false)
         this.setState("showLast", false)
-        this.setState("showLastest", true)
-        this.setState("fruits", [...this.state.fruits]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
     }

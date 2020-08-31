@@ -25,7 +25,9 @@ const state = {
     maybe: "maybe",
     maybe2: "maybe",
     yes2: "yes",
-    n1: 1 + 1,
+    get n1() {
+        return 1 + 1;
+    },
     empty: "",
     zero: 0,
 };
@@ -38,6 +40,18 @@ const tests = [
     {
         str: "n1 >= two && no > yes",
         assert: state.n1 >= state.two && state.no > state.yes,
+    },
+    {
+        str: "(three > threeb) || (two < three)",
+        assert: (state.three > state.threeb) || (state.two < state.three),
+    },
+    {
+        str: "two",
+        assert: state.two,
+    },
+    {
+        str: "!two",
+        assert: false,
     },
     {
         str: "(showMenu || isFirst) || (!showLatest || that)",
