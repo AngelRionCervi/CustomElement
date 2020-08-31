@@ -44,7 +44,7 @@ const tests = [
     { str: "(two !== threeb && threeb !== three) || yes === yes2", assert: (state.two !== state.threeb && state.threeb !== state.three) || state.yes === state.yes2 },
     { str: "(two !== threeb && threeb !== three) || yes === yes2 && that && yes2", assert: (state.two !== state.threeb && state.threeb !== state.three) || state.yes === state.yes2 && state.that && state.yes2 }, // realisticaly outputs "yes", a truthly value
     { str: "n1 && yes && yes2 && huhu && maybe && (empty || !!!zero)", assert: state.n1 && state.yes && state.yes2 && state.huhu && state.maybe && (state.empty || !state.zero) },
-    { str: "!!three === !!zero", assert: false },
+    { str: "!!three === !!zero", assert: !!state.three === !!state.zero },
     { str: "(maybe === maybe2 && !zero !== !empty || yes && n1 === two) || zero", assert: (state.maybe === state.maybe2 && !state.zero !== !state.empty || state.yes && state.n1 === state.two) || state.zero },
 ];
 
