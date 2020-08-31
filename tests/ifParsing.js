@@ -30,6 +30,21 @@ const state = {
     zero: 0,
 };
 
+"two + 1 + 'string'"
+/*
+    types would be :
+    var
+    number
+    string
+
+    operators:
+    +
+    -
+    *
+    /
+    %
+    **
+*/
 const tests = [
     {
         str: "(showMenu || isFirst) && (showLatest || that)",
@@ -90,6 +105,10 @@ const tests = [
     },
 ];
 
+const tests2 = [
+    { str: "1 + 1 === two", assert: true },
+]
+
 /// package ///
 const innerMostRegex = /\(([^()]*)\)/g;
 const notNumberRegex = /!+/g;
@@ -102,11 +121,23 @@ const MORE = ">";
 const LESS = "<";
 const MORE_OR_EQUAL = ">=";
 const LESS_OR_EQUAL = "<=";
+const PLUS = "+";
+const MINUS = "-";
+const MULT = "*";
+const DIV = "/";
+const EXP = "**";
+const MODULO = "%";
 const comparisonRegexp = new RegExp(`(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`);
+const arithmeticRegexp = new RegExp(`([${PLUS}|${MINUS}|${MULT}|${DIV}|${EXP}|${MODULO}])`);
+const stringRegexp = /(['])((\\{2})*|(.*?[^\\](\\{2})*))\1/;
 
-const getVal = (obj, path) => {
-    const notMatches = (path.match(notNumberRegex) || []).join();
-    const res = resolvePath(obj, path.trim().replace(notMatches, ""));
+const getVal = (obj, exp) => {
+    const split = splitTrim(exp, arithmeticRegexp);
+    const values = split.filter((e) => !arithmeticRegexp.test(e));
+    const operators = split.filter((e) => arithmeticRegexp.test(e));
+    console.log(values, operators, split)
+    const notMatches = (exp.match(notNumberRegex) || []).join();
+    const res = resolvePath(obj, exp.trim().replace(notMatches, ""));
     return notMatches.length % 2 === 0 ? res : !res;
 };
 
@@ -118,8 +149,9 @@ const ifParser = (str) => {
             ? or
             : group.reduce((and, cond) => {
                   if (cond === "true") return and === true;
-                  let res = getVal(state, cond);
+                  let res;
                   const symbolMatch = cond.match(comparisonRegexp)?.[0];
+                  if (!symbolMatch) res = getVal(state, cond);
                   const [r1, r2] = splitTrim(cond, symbolMatch).map((path) => getVal(state, path));
                   switch (symbolMatch) {
                       case EQUAL:
@@ -168,13 +200,13 @@ const tester = (times, tests) => {
             if (!!test.assert === !!scopedParser(test.str)) {
                 goodCount++;
             } else {
-                console.log("---shit---");
-                console.log(`test ${index} failed, ${!!scopedParser(test.str)}`);
-                console.log("----------");
+                // console.log("---shit---");
+                // console.log(`test ${index} failed, ${!!scopedParser(test.str)}`);
+                // console.log("----------");
             }
         });
     }
-    console.log(`tests done ${goodCount}/${tests.length * times} in ${Date.now() - time1} ms`);
+    //console.log(`tests done ${goodCount}/${tests.length * times} in ${Date.now() - time1} ms`);
 };
 
-tester(1, tests);
+tester(1, tests2);
