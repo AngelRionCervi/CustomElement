@@ -27,6 +27,9 @@ class EZCTest extends EZC {
                 <div if="showLast">
                     -<div loop="tie of fruits">
                         <div loop-item="tie"></div>
+                        -<div loop="tie of ties">
+                        <p loop-item="tie"></p>
+                    </div>
                     </div>
                 ok
                 </div>
@@ -44,7 +47,8 @@ class EZCTest extends EZC {
 
     onRender() {
         this.setState("showOk", false)
-        this.setState("showLast", false)
+        this.setState("showLast", true)
+        this.setState("ties", [...this.state.ties, "green", "yellow"])
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
     }
