@@ -23,10 +23,9 @@ const splitTrim = (string, separator) => {
 };
 
 const splitTrim2 = (string, separator) => {
-   return string.split(/(\d[^*\/+-]*[*\/+-])/g)
+   return string.split(separator)
            .map((m, i, a) => i%2 ? m[m.length-1] : m + (a[i+1] || "").slice(0, -1))
            .map((e) => e.trim())
-           //.map((e) => /\d/.test(e) ? computeNumber(e).toString() : e.toString())
 };
 
 const indexOfRegex = (arr, regex, last = false) => {
@@ -152,9 +151,9 @@ const tests = [
     { str: "2.5 * 2 === 5", assert: 2.5 * 2 === 5 }, 
     { str: "1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5", assert: 1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5 },
     { str: "-1-1 === -2", assert: -1 - 1 === -2 }, 
-    { str: "-1-1---1===-3", assert: -1 - 1 - - - 1 === -3 }, 
+    { str: "-1-1---1*3===-5", assert: -1 - 1 - - - 1 * 3 === -5 }, 
+    { str: "- - (1 + 1) * 4 === 8", assert: - - (1 + 1) * 4 === 8 }, 
 ];
-
 /// package ///
 const innerMostRegex = /\(([^()]*)\)/g;
 const notRegex = /!+/g;
@@ -174,7 +173,7 @@ const DIV = "/";
 const EXP = "**";
 const MODULO = "%";
 const comparisonRegexp = new RegExp(`(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`);
-const arithmeticRegexp = /([+\-*\/](?=\s))/;
+const arithmeticRegexp = /(\d[^*\/+-]*[*\/+-])/g;
 const arithmeticPriorityRegexp = /([*\/](?=\s))/;
 const arithmeticRegexp2 = /([+\-*\/%])/;
 const arithmeticPriorityRegexp2 = /([*\/])/;
@@ -193,7 +192,6 @@ const getVal = (obj, exp) => {
     };
 
     let split = splitTrim2(exp, arithmeticRegexp);
-    console.log(split)
 
     split.forEach((v, i, a) => {
         if (v === "true") {
