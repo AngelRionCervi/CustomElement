@@ -8,12 +8,14 @@ const resolvePath = (obj, path, separator = ".") => {
 };
 
 const splitTrim = (string, separator) => {
-    return string.split(separator).map((e) => e.trim());
+    return string.split(separator).filter((el) => el !== undefined).map((e) => e.trim());
 };
 
 const indexOfRegex = (arr, regex, last = false) => {
+    console.log("arr", arr)
     let res;
     for (let u = 0; u < arr.length; u++) {
+        if (arr[u].toString().length > 1) continue; // avoid matching with negative numbers...
         if (regex.test(arr[u])) {
             res = u;
             if (!last) break;
@@ -22,9 +24,18 @@ const indexOfRegex = (arr, regex, last = false) => {
     return res;
 };
 
+const indexOfRegexString = (string, regex, last = false) => {
+    console.log("match", string, string.match(regex))
+    const match = string.match(regex);
+    return match?.index - 1 || false;
+};
+
 const replaceAll = (str, find, replace) => {
     return str.replace(new RegExp(find, 'g'), replace);
 }
+//console.log(-1 - 987 * 5 * 23 / 5 * 2.5)
+//console.log("hh", splitTrim("-56751.5", /([+\-*\/%])/), "hh", splitTrim("-56751.5", /((?!^-)[+*\/-](\s?-)?)/))
+
 
 const state = {
     that: true,
@@ -63,7 +74,7 @@ const state = {
     %
     **
 */
-const tests = [
+const tests = [ /*
     {
         str: "(showMenu || isFirst) && (showLatest || that)",
         assert: (state.showMenu || state.isFirst) && (state.showLatest || state.that),
@@ -123,15 +134,15 @@ const tests = [
     },
     { str: "1 + 1 === 2", assert: 1 + 1 === 2 },
     { str: "987 * 5 * 23 / 5 === 22701", assert: 987 * 5 * 23 / 5 === 22701 },
-    { str: "2.5 * 2 === 5", assert: 2.5 * 2 === 5 },
-    { str: "1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5", assert: 1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5 }
+    { str: "2.5 * 2 === 5", assert: 2.5 * 2 === 5 }, 
+    { str: "1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5", assert: 1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5 },
+    { str: "-1-1 === -2", assert: -1 - 1 === -2 }, */
+    { str: "-1-1 - -1 === -1", assert: -1-1 - -1 === -1 },
 ];
-console.log(1 - 987 * 5 * 23 / 5 * 2.5)
-
 
 /// package ///
 const innerMostRegex = /\(([^()]*)\)/g;
-const notNumberRegex = /!+/g;
+const notRegex = /!+/g;
 const AND = "&&";
 const OR = "||";
 const NOT = "!";
@@ -148,15 +159,18 @@ const DIV = "/";
 const EXP = "**";
 const MODULO = "%";
 const comparisonRegexp = new RegExp(`(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`);
-const arithmeticRegexp = /([+\-*\/%])/;
-const arithmeticPriorityRegexp = /([*\/])/;
+const arithmeticRegexp = /((?!^-)[+*\/-](\s?-)?)/;
+const arithmeticPriorityRegexp = /((?!^-)[*\/](\s?-)?)/;
+const arithmeticRegexp2 = /([+\-*\/%])/;
+const arithmeticPriorityRegexp2 = /([*\/])/;
 const stringRegexp = /(['])((\\{2})*|(.*?[^\\](\\{2})*))\1/;
 const numberRegexp = /^-?\d+\.?\d*$/;
-/(?!^-)[+*\/-](\s?-)?/ // better arithmetic regex for negative number but puts undfined + last test bug
+/(?!^-)[+*\/-](\s?-)?/; // better arithmetic regex for negative number but puts undfined + last test bug
+/([+\-*\/%])/;
 
 const getVal = (obj, exp) => {
     let split = splitTrim(exp, arithmeticRegexp);
-
+    
     split.forEach((v, i, a) => {
         if (v === "true") {
             a[i] = true
@@ -167,19 +181,21 @@ const getVal = (obj, exp) => {
             if (stringRegexp.test(v)) {
                 a[i] = replaceAll(v, "'", "");
             }
-            if (!numberRegexp.test(v) && !stringRegexp.test(v) && !arithmeticRegexp.test(v)) {
+            if (!numberRegexp.test(v) && !stringRegexp.test(v) && !arithmeticRegexp2.test(v)) {
                 a[i] = resolvePath(obj, replaceAll(v, "!", ""));
             }
         }
     });
-
-    let nextOp = indexOfRegex(split, arithmeticPriorityRegexp);
+    console.log("split", split)
+    let nextOp = indexOfRegex(split, arithmeticPriorityRegexp2);
     if (!nextOp) {
-        nextOp = indexOfRegex(split, arithmeticRegexp);
+        nextOp = indexOfRegex(split, arithmeticRegexp2);
     }
+    console.log("nextOp", nextOp)
     while (nextOp) {
         let res;
         const [n1, op, n2] = [split[nextOp - 1], split[nextOp], split[nextOp + 1]];
+        console.log("hey", n1, op, n2)
         switch (op) {
             case PLUS:
                 res = n1 + n2;
@@ -200,14 +216,15 @@ const getVal = (obj, exp) => {
                 res = n1 % n2;
                 break;
         }
+ 
         split.splice(nextOp - 1, 3, res);
-        nextOp = indexOfRegex(split, arithmeticPriorityRegexp);
+        nextOp = indexOfRegex(split, arithmeticPriorityRegexp2);
         if (!nextOp) {
-            nextOp = indexOfRegex(split, arithmeticRegexp);
+            nextOp = indexOfRegex(split, arithmeticRegexp2);
         }
     }
 
-    const notMatches = (exp.match(notNumberRegex) || []).join();
+    const notMatches = (exp.match(notRegex) || []).join();
     //const res = resolvePath(obj, exp.trim().replace(notMatches, ""));
     const res = split[0];
     //console.log(res)
@@ -224,6 +241,7 @@ const ifParser = (str) => {
                   const symbolMatch = cond.match(comparisonRegexp)?.[0];
                   if (!symbolMatch) res = getVal(state, cond);
                   const [r1, r2] = splitTrim(cond, symbolMatch).map((path) => getVal(state, path));
+                  console.log(r1, r2)
                   switch (symbolMatch) {
                       case EQUAL:
                           res = r1 === r2;
