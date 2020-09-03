@@ -16,20 +16,24 @@ class EZCTest extends EZC {
         this.performance = 0;
 
         shadowRoot.innerHTML = /* html */`
-            <div if="two > 3 - 2">
+            <p> {{ one }} {{ two }}</p>
+            <div if="two === 3 - 2">
                 hi
                 <div if="showOk">
-                    -<div loop="tie of ties">
-                        <p loop-item="tie"></p>
+                    -<div loop="tize of ties">
+                        <p loop-item="tize"></p>
                     </div>
                 ok
                 </div>
                 <div if="showLast">
-                    -<div loop="tie of fruits">
-                        <div loop-item="tie"></div>
+  
+                    -<div loop="fruit of fruits">
+                    <p> {{ one }} {{ two }}</p>
+                        <div loop-item="fruit"></div>
                         -<div loop="tie of ties">
-                        <p loop-item="tie"></p>
-                    </div>
+                            <p> {{ one }} {{ two }}</p>
+                            
+                        </div>
                     </div>
                 ok
                 </div>
@@ -48,6 +52,7 @@ class EZCTest extends EZC {
     onRender() {
         this.setState("showOk", false)
         this.setState("showLast", true)
+        this.setState("two", 1)
         this.setState("ties", [...this.state.ties, "green", "yellow"])
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
