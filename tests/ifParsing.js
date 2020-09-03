@@ -7,43 +7,10 @@ const resolvePath = (obj, path, separator = ".") => {
     );
 };
 
-const computeNumber = (str) => {
-    const dashRegex = /\-/g;
-    const digitRegex = /([0-9]*[.])?[0-9]+/;
-    const matches = str.match(dashRegex) || [];
-    const number = str.match(digitRegex)[0];
-    return matches.length % 2 === 0 ? parseFloat(number) : parseFloat(`-${number}`);
-};
-
 const splitTrim = (string, separator) => {
     return string
         .split(separator)
-        .filter((el) => el !== undefined)
         .map((e) => e.trim());
-};
-
-const splitTrim2 = (string, separator) => {
-   return string.split(separator)
-           .map((m, i, a) => i%2 ? m[m.length-1] : m + (a[i+1] || "").slice(0, -1))
-           .map((e) => e.trim())
-};
-
-const indexOfRegex = (arr, regex, last = false) => {
-    let res;
-    for (let u = 0; u < arr.length; u++) {
-        if (arr[u].toString().length > 1) continue; // avoid matching with negative numbers...
-        if (regex.test(arr[u])) {
-            res = u;
-            if (!last) break;
-        }
-    }
-    return res;
-};
-
-const indexOfRegexString = (string, regex, last = false) => {
-    console.log("match", string, string.match(regex));
-    const match = string.match(regex);
-    return match?.index - 1 || false;
 };
 
 const replaceAll = (str, find, replace) => {
@@ -72,6 +39,7 @@ const state = {
     dot5: 1.5,
     height: 8,
     fhDOTh: 58.8,
+    n39smth: 39.99915629251701,
 };
 
 /*
@@ -88,7 +56,7 @@ const state = {
     %
     **
 */
-const tests = [ 
+const tests = [
     {
         str: "(showMenu || isFirst) && (showLatest || that)",
         assert: (state.showMenu || state.isFirst) && (state.showLatest || state.that),
@@ -130,36 +98,36 @@ const tests = [
     },
     {
         str: "(two !== threeb && threeb !== three) || yes === yes2 && that && yes2",
-        assert:
-            (state.two !== state.threeb && state.threeb !== state.three) ||
-            (state.yes === state.yes2 && state.that && state.yes2),
+        assert: (state.two !== state.threeb && state.threeb !== state.three) || (state.yes === state.yes2 && state.that && state.yes2),
     }, // realisticaly outputs "yes", a truthly value
     {
         str: "n1 && yes && yes2 && huhu && maybe && (empty || !!!zero)",
         assert: state.n1 && state.yes && state.yes2 && state.huhu && state.maybe && (state.empty || !!!state.zero),
-    }, 
-    { str: "!!three === !!zero", assert: !!state.three === !!state.zero }, 
+    },
+    { str: "!!three === !!zero", assert: !!state.three === !!state.zero },
     {
         str: "(maybe === maybe2 && !zero !== !empty || yes && n1 === two) || zero",
-        assert:
-            (state.maybe === state.maybe2 && !state.zero !== !state.empty) ||
-            (state.yes && state.n1 === state.two) ||
-            state.zero,
-    }, 
+        assert: (state.maybe === state.maybe2 && !state.zero !== !state.empty) || (state.yes && state.n1 === state.two) || state.zero,
+    },
     { str: "1 + 1 === 2", assert: 1 + 1 === 2 },
-    { str: "987 * 5 * 23 / 5 === 22701", assert: 987 * 5 * 23 / 5 === 22701 },
-    { str: "2.5 * 2 === 5", assert: 2.5 * 2 === 5 }, 
-    { str: "1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5", assert: 1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5 },
-    { str: "-1-1 === -2", assert: -1 - 1 === -2 }, 
-    { str: "-1-1---1*3===-5", assert: -1 - 1 - - - 1 * 3 === -5 }, 
-    { str: "- - (1 + 1) * 4 === 8", assert: - - (1 + 1) * 4 === 8 }, 
+    { str: "987 * 5 * 23 / 5 === 22701", assert: (987 * 5 * 23) / 5 === 22701 },
+    { str: "2.5 * 2 === 5", assert: 2.5 * 2 === 5 },
+    { str: "1 - 987 * 5 * 23 / 5 * 2.5 === -56751.5", assert: 1 - ((987 * 5 * 23) / 5) * 2.5 === -56751.5 },
+    { str: "-1-1 === -2", assert: -1 - 1 === -2 },
+    { str: "-1-1---1*3===-5", assert: -1 - 1 - -(-1) * 3 === -5 },
+    { str: "- - (1 + 1) * 4 === 8", assert: -(-(1 + 1)) * 4 === 8 },
+    { str: "5 * 9 - 5 / (98 * (-8)) *8.2 / 75 * 1.21 -5 === 40.00084370748299", assert: 5 * 9 - (((5 / (98 * -8)) * 8.2) / 75) * 1.21 - 5 === 40.00084370748299 },
+    {
+        str: "5 * 9 - - 5 / (98 * (-8)) * -8.2 / -75 * 1.21 + 6 - - - - - - - -5 === 55.99915629251701",
+        assert: 5 * 9 - (((-5 / (98 * -8)) * -8.2) / -75) * 1.21 + 6 - -(-(-(-(-(-(-5)))))) === 55.99915629251701,
+    },
+    { str: "145 + 8 < 895*(8/4.21) && 5 * 4 - (-5) !== two", assert: 145 + 8 < 895 * (8 / 4.21) && 5 * 4 - -5 !== state.two },
+    { str: "2 % 5 === 2", assert: 2 % 5 === 2 },
 ];
+
 /// package ///
-const innerMostRegex = /\(([^()]*)\)/g;
-const notRegex = /!+/g;
 const AND = "&&";
 const OR = "||";
-const NOT = "!";
 const EQUAL = "===";
 const NOT_EQUAL = "!==";
 const MORE = ">";
@@ -170,49 +138,71 @@ const PLUS = "+";
 const MINUS = "-";
 const MULT = "*";
 const DIV = "/";
-const EXP = "**";
 const MODULO = "%";
+const innerExpBlockRegex = /\(([^()]*)\)/g;
+const notRegex = /!+/g;
 const comparisonRegexp = new RegExp(`(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`);
-const arithmeticRegexp = /(\d[^*\/+-]*[*\/+-])/g;
-const arithmeticPriorityRegexp = /([*\/](?=\s))/;
-const arithmeticRegexp2 = /([+\-*\/%])/;
-const arithmeticPriorityRegexp2 = /([*\/])/;
+const arSplitRegex = /(\d[^*\/%+-]*[*\/%+-])/g;
+const arOpMatchRegex = /([+\-*\/%])/;
+const arOpPrioMatchRegex = /([*\/%])/;
 const stringRegexp = /(['])((\\{2})*|(.*?[^\\](\\{2})*))\1/;
 const numberRegexp = /^-?\d+\.?\d*$/;
-/(?!^-)[+*\/-](\s?-)?/; // better arithmetic regex for negative number but puts undfined + last test bug
-/([+\-*\/%])/;
+const dashRegex = /\-/g;
+const digitRegex = /([0-9]*[.])?[0-9]+/;
 
-const getVal = (obj, exp) => {
+const splitTrimExp = (string, separator) => {
+    return string
+        .split(separator)
+        .map((m, i, a) => (i % 2 ? m[m.length - 1] : m + (a[i + 1] || "").slice(0, -1)))
+        .map((e) => e.trim());
+};
+
+const indexOfRegex = (arr, regex, last = false) => {
+    let res;
+    for (let u = 0; u < arr.length; u++) {
+        if (arr[u].toString().length > 1) continue; // avoid matching with negative numbers...
+        if (regex.test(arr[u])) {
+            res = u;
+            if (!last) break;
+        }
+    }
+    return res;
+};
+
+const computeNumber = (str) => {
+    const matches = str.match(dashRegex) || [];
+    const number = str.match(digitRegex)[0];
+    return matches.length % 2 === 0 ? parseFloat(number) : parseFloat(`-${number}`);
+};
+
+const computeExp = (obj, exp) => {
     const getNextOp = (split) => {
-        let nextOp = indexOfRegex(split, arithmeticPriorityRegexp2);
+        let nextOp = indexOfRegex(split, arOpPrioMatchRegex); // *, /, %
         if (!nextOp) {
-            nextOp = indexOfRegex(split, arithmeticRegexp2);
+            nextOp = indexOfRegex(split, arOpMatchRegex); // +, -
         }
         return nextOp;
     };
-
-    let split = splitTrim2(exp, arithmeticRegexp);
-
+    let split = splitTrimExp(exp, arSplitRegex);
+    // convert the string into ar expression
     split.forEach((v, i, a) => {
         if (v === "true") {
             a[i] = true;
+        } else if (!numberRegexp.test(v) && !stringRegexp.test(v) && !arOpMatchRegex.test(v)) {
+            a[i] = resolvePath(obj, replaceAll(v, "!", ""));
         } else {
             if (!numberRegexp.test(v) && /\d/.test(v)) {
                 a[i] = computeNumber(v);
             }
             if (numberRegexp.test(v)) {
                 a[i] = parseFloat(v);
-            }
-            if (stringRegexp.test(v)) {
+            } else if (stringRegexp.test(v)) {
                 a[i] = replaceAll(v, "'", "");
-            }
-            if (!numberRegexp.test(v) && !stringRegexp.test(v) && !arithmeticRegexp2.test(v)) {
-                a[i] = resolvePath(obj, replaceAll(v, "!", ""));
             }
         }
     });
+    // compute that expression
     let nextOp = getNextOp(split);
-    //console.log("nextOp", nextOp);
     while (nextOp) {
         let res;
         const [n1, op, n2] = [split[nextOp - 1], split[nextOp], split[nextOp + 1]];
@@ -229,36 +219,27 @@ const getVal = (obj, exp) => {
             case DIV:
                 res = n1 / n2;
                 break;
-            case EXP:
-                res = n1 ** n2;
-                break;
             case MODULO:
                 res = n1 % n2;
                 break;
         }
-
         split.splice(nextOp - 1, 3, res);
         nextOp = getNextOp(split);
     }
-
     const notMatches = (exp.match(notRegex) || []).join();
-    //const res = resolvePath(obj, exp.trim().replace(notMatches, ""));
     const res = split[0];
-    //console.log(res)
     return notMatches.length % 2 === 0 ? res : !res;
 };
 // takes none scoped if statement as string and outputs a bool result
-const ifParser = (str) => {
-    const groups = splitTrim(str, OR).map((s) => splitTrim(s, AND));
-    return groups.reduce((or, group) => {
+const computeBlock = (str) => {
+    return splitTrim(str, OR).map((s) => splitTrim(s, AND)).reduce((or, group) => {
         return or
             ? or
             : group.reduce((and, cond) => {
                   let res;
                   const symbolMatch = cond.match(comparisonRegexp)?.[0];
-                  if (!symbolMatch) res = getVal(state, cond);
-                  const [r1, r2] = splitTrim(cond, symbolMatch).map((path) => getVal(state, path));
-                  //console.log(r1, r2);
+                  if (!symbolMatch) res = computeExp(state, cond);
+                  const [r1, r2] = splitTrim(cond, symbolMatch).map((path) => computeExp(state, path));
                   switch (symbolMatch) {
                       case EQUAL:
                           res = r1 === r2;
@@ -283,18 +264,17 @@ const ifParser = (str) => {
               }, true);
     }, false);
 };
-
-// takes a scoped (or not) if statement as string, matches it's innerMost () and process them one after the other with ifParser
+// takes a scoped (or not) if statement as string, matches it's blocks () and processes them one after the other;
 // outpouting final result;
-const scopedParser = (str) => {
-    let innerStatements = [...str.matchAll(innerMostRegex)];
+const parse = (str) => {
+    let innerStatements = [...str.matchAll(innerExpBlockRegex)];
     while (innerStatements.length > 0) {
         innerStatements.forEach((regObj) => {
-            str = str.replace(regObj[0], ifParser(regObj[1]));
+            str = str.replace(regObj[0], computeBlock(regObj[1]));
         });
-        innerStatements = [...str.matchAll(innerMostRegex)];
+        innerStatements = [...str.matchAll(innerExpBlockRegex)];
     }
-    return ifParser(str);
+    return computeBlock(str);
 };
 
 /// tests ///
@@ -303,11 +283,11 @@ const tester = (times, tests) => {
     let goodCount = 0;
     for (let u = 0; u < times; u++) {
         tests.forEach((test, index) => {
-            if (!!test.assert === !!scopedParser(test.str)) {
+            if (!!test.assert === !!parse(test.str)) {
                 goodCount++;
             } else {
                 console.log("---shit---");
-                console.log(`test ${index} failed, ${!!scopedParser(test.str)} - ${test.assert}`);
+                console.log(`test ${index} failed, ${!!parse(test.str)} - ${test.assert}`);
                 console.log("----------");
             }
         });
