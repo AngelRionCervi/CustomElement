@@ -16,9 +16,9 @@ class EZCTest extends EZC {
         this.performance = 0;
 
         shadowRoot.innerHTML = /* html */`
-            <div if="two > one">
+            <div if="two > 3 - 2">
                 hi
-                <div if="!showOk">
+                <div if="showOk">
                     -<div loop="tie of ties">
                         <p loop-item="tie"></p>
                     </div>
