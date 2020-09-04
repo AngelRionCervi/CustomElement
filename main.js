@@ -10,29 +10,32 @@ class EZCTest extends EZC {
             showLastest: true,
             one: 1,
             two: 2,
+            hihi: "hahahahahaah",
+            someText: "some text lol",
             ties: ["red", "blue"],
-            fruits: ["strawberry", "mango"]
+            fruits: ["strawberry", "mango", "cherry"]
         };
         this.performance = 0;
 
         shadowRoot.innerHTML = /* html */`
-            <p> {{ one }} {{ two }}</p>
+            <p> {{ someText }} </p>
+            <div data-bind="one > 0 : hihi"></div>
             <div if="two === 3 - 2">
                 hi
                 <div if="showOk">
                     -<div loop="tize of ties">
                         <p loop-item="tize"></p>
                     </div>
-                ok
+                cant see me
                 </div>
                 <div if="showLast">
-  
                     -<div loop="fruit of fruits">
                     <p> {{ one }} {{ two }}</p>
+                    <div data-bind="one > 0 : hihi"></div>
                         <div loop-item="fruit"></div>
                         -<div loop="tie of ties">
-                            <p> {{ one }} {{ two }}</p>
-                            
+                            <p> {{ someText }} </p>
+                            <div data-bind="one > 0 : hihi"></div>
                         </div>
                     </div>
                 ok
@@ -53,7 +56,10 @@ class EZCTest extends EZC {
         this.setState("showOk", false)
         this.setState("showLast", true)
         this.setState("two", 1)
+        this.setState("someText", "some other text")
         this.setState("ties", [...this.state.ties, "green", "yellow"])
+        this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")])
+        this.setState("hihi", "hoho")
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
     }
