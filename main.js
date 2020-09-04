@@ -8,6 +8,7 @@ class EZCTest extends EZC {
             showOk: true,
             showLast: true,
             showLastest: true,
+            displayName: true,
             one: 1,
             two: 2,
             hihi: "hahahahahaah",
@@ -15,12 +16,27 @@ class EZCTest extends EZC {
             ties: ["red", "blue"],
             fruits: ["strawberry", "mango", "cherry"],
             cars: { bmw: "m5", audi: "r8" },
+            rclass: "rezrzrzr",
             bigAssArray: new Array(1000).fill(0),
         };
         this.performance = 0;
 
         shadowRoot.innerHTML = /* html */ `
-            <p> {{ someText }} </p>
+        <style>
+            .color-red {
+                color: red;
+            }
+            .underline {
+                text-decoration: underline;
+            }
+            .text-big {
+                font-size: 5em;
+            }
+            .dtitle {
+                font-size: 500%;
+            }
+        </style>
+            <p class-bind="displayName : color-red, rclass"> {{ someText }} </p>
             <div data-bind="one > 0 : hihi"></div>
             <div if="two === 3 - 2">
                 hi
@@ -58,7 +74,6 @@ class EZCTest extends EZC {
 </table>
     `
     }
-    
 
     beforeInit() {
         this.performance = Date.now();
@@ -76,6 +91,8 @@ class EZCTest extends EZC {
         this.setState("ties", [...this.state.ties, "green", "yellow"]);
         this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
         this.setState("hihi", "hoho");
+        this.setState("displayName", false);
+        this.setState("displayName", true);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
     }
