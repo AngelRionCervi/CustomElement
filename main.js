@@ -13,11 +13,12 @@ class EZCTest extends EZC {
             hihi: "hahahahahaah",
             someText: "some text lol",
             ties: ["red", "blue"],
-            fruits: ["strawberry", "mango", "cherry"]
+            fruits: ["strawberry", "mango", "cherry"],
+            bigAssArray: new Array(1000).fill(0),
         };
         this.performance = 0;
 
-        shadowRoot.innerHTML = /* html */`
+        shadowRoot.innerHTML = /* html */ `
             <p> {{ someText }} </p>
             <div data-bind="one > 0 : hihi"></div>
             <div if="two === 3 - 2">
@@ -42,7 +43,17 @@ class EZCTest extends EZC {
                 </div>
             </div>
         `;
+        `
+    <table>
+    <tbody loop="i of bigAssArray">
+        <tr>
+            <td>The table body</td>
+        </tr>
+    </tbody>
+</table>
+    `
     }
+    
 
     beforeInit() {
         this.performance = Date.now();
@@ -53,13 +64,13 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-        this.setState("showOk", false)
-        this.setState("showLast", true)
-        this.setState("two", 1)
-        this.setState("someText", "some other text")
-        this.setState("ties", [...this.state.ties, "green", "yellow"])
-        this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")])
-        this.setState("hihi", "hoho")
+        this.setState("showOk", false);
+        this.setState("showLast", true);
+        this.setState("two", 1);
+        this.setState("someText", "some other text");
+        this.setState("ties", [...this.state.ties, "green", "yellow"]);
+        this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
+        this.setState("hihi", "hoho");
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
     }
