@@ -36,33 +36,28 @@ class EZCTest extends EZC {
                 font-size: 500%;
             }
         </style>
-            <p class-bind="displayName : color-red, rclass"> {{ someText }} </p>
-            <div data-bind="one > 0 : hihi"></div>
-            <div if="two === 3 - 2">
-                hi
-                <div if="showOk">
-                    -<div loop="tize in ties">
-                        <p loop-item="tize"></p>
-                    </div>
-                cant see me
-                </div>
-                <div if="showLast">
-                    -<div loop="(fruit, key) in fruits">
-                    <p> {{ one }} {{ two }}</p>
-                    <div data-bind="one > 0 : hihi"></div>
-                        <div loop-item="fruit"></div>
-                        <div loop-key="key"></div>
-                        -<div loop="tie in ties">
-                            <p> {{ someText }} </p>
-                            <div data-bind="one > 0 : hihi"></div>
-                        </div>
-                    </div>
-                ok
-                </div>
-            </div>
+
             <div loop="(item, index) in fruits">
                 <div loop-item="item"></div>
             </div>
+            <div loop="(item, index) in fruits">
+                <div loop-item="item"></div>
+                <div>hi</div>
+                <div loop="(item, index) in fruits">
+                    <div loop-item="item"></div>
+                    <div>hey</div>
+                </div>
+            </div>
+
+            <div if="showOk">
+            -<div loop="tize in ties">
+                <p loop-item="tize"></p>
+            </div>
+        cant see me
+        </div>
+        <div if="showOk">
+        <div>hi</div>
+    </div>
         `;
         `
     <table>
@@ -72,6 +67,30 @@ class EZCTest extends EZC {
         </tr>
     </tbody>
 </table>
+<p class-bind="displayName : color-red, rclass"> {{ someText }} </p>
+<div data-bind="one > 0 : hihi"></div>
+<div if="two === 3 - 2">
+    hi
+    <div if="showOk">
+        -<div loop="tize in ties">
+            <p loop-item="tize"></p>
+        </div>
+    cant see me
+    </div>
+    <div if="showLast">
+        -<div loop="(fruit, key) in fruits">
+        <p> {{ one }} {{ two }}</p>
+        <div data-bind="one > 0 : hihi"></div>
+            <div loop-item="fruit"></div>
+            <div loop-key="key"></div>
+            -<div loop="tie in ties">
+                <p> {{ someText }} </p>
+                <div data-bind="one > 0 : hihi"></div>
+            </div>
+        </div>
+    ok
+    </div>
+</div>
     `
     }
 
@@ -84,7 +103,7 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-        this.setState("showOk", false);
+        this.setState("showOk", true);
         this.setState("showLast", true);
         this.setState("two", 1);
         this.setState("someText", "some other text");
