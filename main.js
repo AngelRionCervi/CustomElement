@@ -36,28 +36,16 @@ class EZCTest extends EZC {
                 font-size: 500%;
             }
         </style>
-
             <div loop="(item, index) in fruits">
-                <div loop-item="item"></div>
-            </div>
-            <div loop="(item, index) in fruits">
-                <div loop-item="item"></div>
-                <div>hi</div>
+                <p>out1</p>
                 <div loop="(item, index) in fruits">
                     <div loop-item="item"></div>
-                    <div>hey</div>
+                    <p>inside1</p>
                 </div>
             </div>
-
-            <div if="showOk">
-            -<div loop="tize in ties">
-                <p loop-item="tize"></p>
+            <div loop="(item, index) in fruits">
+                <p>out2</p>
             </div>
-        cant see me
-        </div>
-        <div if="showOk">
-        <div>hi</div>
-    </div>
         `;
         `
     <table>
