@@ -37,17 +37,19 @@ class EZCTest extends EZC {
             }
         </style>
             <div loop="(item, index) in fruits">
-                <p>out1</p>
+              
                 <div loop="(item, index) in fruits">
                     <div loop-item="item"></div>
-                    <p>inside1</p>
+                    
                 </div>
             </div>
-            <div loop="(item, index) in fruits">
-                <p>out2</p>
-            </div>
+          
         `;
         `
+        <div loop="(item, index) in fruits">
+        <p>out2</p>
+    </div>
+
     <table>
     <tbody loop="i of bigAssArray">
         <tr>
