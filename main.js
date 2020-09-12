@@ -37,13 +37,13 @@ class EZCTest extends EZC {
             }
         </style>
             <div loop="(item, index) in fruits">
-              
-                <div loop="(item, index) in fruits">
+                <p>hey boyyyyy</p>
+                <div loop="(ite, index) in ties">
                     <div loop-item="item"></div>
+                    <div loop-item="ite"></div>
                     
                 </div>
             </div>
-          
         `;
         `
         <div loop="(item, index) in fruits">
