@@ -36,14 +36,20 @@ class EZCTest extends EZC {
                 font-size: 500%;
             }
         </style>
-            <div loop="(item, index) in fruits">
-                <p>hey boyyyyy</p>
-                <div loop="(ite, index) in ties">
-                    <div loop-item="item"></div>
-                    <div loop-item="ite"></div>
-                    
+        
+            <div>lalalalala</div>
+            <div class="just-a-container">
+                <div loop="(item, inde) in fruits">
+                    <p>hey boyyyyy</p>
+                    <div loop="(ite, index) in ties">
+                        <p>aa</p>
+                        <div loop-item="ite"></div>
+                    </div>
+                    <div loop-index="inde"></div>
                 </div>
+                
             </div>
+            
         `;
         `
         <div loop="(item, index) in fruits">
@@ -93,15 +99,9 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-        this.setState("showOk", true);
-        this.setState("showLast", true);
-        this.setState("two", 1);
-        this.setState("someText", "some other text");
-        this.setState("ties", [...this.state.ties, "green", "yellow"]);
+
         this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
-        this.setState("hihi", "hoho");
-        this.setState("displayName", false);
-        this.setState("displayName", true);
+        //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
     }
