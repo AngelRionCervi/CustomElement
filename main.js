@@ -98,9 +98,9 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-
-        this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
         this.setState("ties", [...this.state.ties, "yy", "gg"]);
+        this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
+        
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
