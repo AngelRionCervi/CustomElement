@@ -5,7 +5,7 @@ class EZCTest extends EZC {
         super();
         const shadowRoot = this.attachShadow({ mode: "open" });
         this.state = {
-            showOk: true,
+            showOk: false,
             showLast: true,
             showLastest: true,
             displayName: true,
@@ -36,7 +36,11 @@ class EZCTest extends EZC {
                 font-size: 500%;
             }
         </style>
-        
+           
+                <div if="showOk">
+                    SHOWOK TRUE
+                </div>
+            
             <div>lalalalala</div>
             <div class="just-a-container">
                 <div loop="(item, inde) in fruits">
@@ -100,7 +104,7 @@ class EZCTest extends EZC {
     onRender() {
         this.setState("ties", [...this.state.ties, "yy", "gg"]);
         this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
-        
+        this.setState("showOk", true);
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
