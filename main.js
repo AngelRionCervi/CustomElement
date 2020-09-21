@@ -37,22 +37,22 @@ class EZCTest extends EZC {
             }
         </style>
             <div class="just-a-container">
-                <div if="showOk">
-                    SHOWOK TRUE
-                </div>
+                
             </div>
             <div>lalalalala</div>
             <div class="just-a-container">
-                <div loop="(item, inde) in fruits">
+                <div loop="($item, $inde) in fruits">
                     <p>hey boyyyyy</p>
-                    <div loop="(ite, index) in ties">
+                    <div loop="($ite, $index) in ties">
                         <p>aa</p>
-                        <div loop-item="ite"></div>
+                        <div loop-item="$ite"></div>
                     </div>
-                    <div loop-index="inde"></div>
+                    <div if="$inde > 0">
+                        SHOWOK IN LOOP
+                    </div>
+                    <div loop-index="$inde"></div>
                 </div>
             </div>
-            
         `;
         `
         <div loop="(item, index) in fruits">
@@ -102,9 +102,9 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-        this.setState("ties", [...this.state.ties, "yy", "gg"]);
-        this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
-        //this.setState("showOk", true);
+        // this.setState("ties", [...this.state.ties, "yy", "gg"]);
+        // this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
+        // this.setState("showOk", true);
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
