@@ -5,10 +5,10 @@ class EZCTest extends EZC {
         super();
         const shadowRoot = this.attachShadow({ mode: "open" });
         this.state = {
-            showOk: false,
+            showOk: true,
             showLast: true,
             showLastest: true,
-            displayName: true,
+            displayName: false,
             one: 1,
             two: 2,
             hihi: "hahahahahaah",
@@ -36,35 +36,43 @@ class EZCTest extends EZC {
                 font-size: 500%;
             }
         </style>
-            <div class="just-a-container">
+
+        <div class="just-a-container">
                 
-            </div>
-            <div>lalalalala</div>
-            <div class="just-a-container">
-                <div loop="($item, $inde) in fruits">
-                    <p>hey boyyyyy</p>
-                    <div loop="($ite, $index) in ties">
-                        <div loop-item="$ite"></div>
-                    </div>
-                    
-                    <div loop-index="$inde"></div>
+        </div>
+        <div>lalalalala</div>
+        <div class="just-a-container">
+            <div loop="($item, $inde) in fruits">
+                <p>hey boyyyyy</p>
+                <div loop="($ite, $index) in ties">
+                    <div loop-item="$ite"></div>
                 </div>
+        
+                <div loop-index="$inde"></div>
             </div>
-            <div>
-                <br>
-                <span>
-                    
-                </span>
-                
+        </div>
+        <div>
+            <br>
+            <span>
+        
+            </span>
+        </div>
+        <div if="showOk">
+            hi
+            <div loop="($it, $indx) in ties">
+                <div loop-item="$it"></div>
+                <div if="displayName">NAME DISPLAYED AAAAAAAA</div>
             </div>
-            <div if="showOk">
-                hi
-                <div loop="($it, $indx) in ties">
-                    <div loop-item="$it"></div>
-                </div>
+            jojo
+            <div loop="($it, $indx) in ties">
+                <div loop-item="$it"></div>
             </div>
+            <span>spans</span>
+        </div>
         `;
         `
+        
+
         <div if="showOk">showok bud</div>
         <div loop="(item, index) in fruits">
         <p>out2</p>
@@ -114,7 +122,7 @@ class EZCTest extends EZC {
     onRender() {
         //this.setState("ties", [...this.state.ties, "yy"]);
         //this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
-        this.setState("showOk", true);
+        //this.setState("showOk", true);
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
