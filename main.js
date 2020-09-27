@@ -44,21 +44,32 @@ class EZCTest extends EZC {
                 <div loop="($item, $inde) in fruits">
                     <p>hey boyyyyy</p>
                     <div loop="($ite, $index) in ties">
-                        <p>aa</p>
                         <div loop-item="$ite"></div>
                     </div>
-                    <div if="$inde > 0">
-                        SHOWOK IN LOOP
-                    </div>
+                    <div if="showOk">
+                    hi
+                   
+                </div>
                     <div loop-index="$inde"></div>
                 </div>
             </div>
+            <div>
+                <br>
+                <span>
+                    
+                </span>
+                
+            </div>
+            <div if="showOk">
+                hi
+               
+            </div>
         `;
         `
+        <div if="showOk">showok bud</div>
         <div loop="(item, index) in fruits">
         <p>out2</p>
     </div>
-
     <table>
     <tbody loop="i of bigAssArray">
         <tr>
@@ -90,7 +101,7 @@ class EZCTest extends EZC {
     ok
     </div>
 </div>
-    `
+    `;
     }
 
     beforeInit() {
@@ -102,9 +113,9 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-        // this.setState("ties", [...this.state.ties, "yy", "gg"]);
-        // this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
-        // this.setState("showOk", true);
+        //this.setState("ties", [...this.state.ties, "yy"]);
+        //this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
+        //this.setState("showOk", true);
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
