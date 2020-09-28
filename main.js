@@ -8,7 +8,8 @@ class EZCTest extends EZC {
             showOk: true,
             showLast: true,
             showLastest: true,
-            displayName: false,
+            displayName: 10,
+            displayName2: 2,
             one: 1,
             two: 2,
             hihi: "hahahahahaah",
@@ -57,11 +58,11 @@ class EZCTest extends EZC {
         
             </span>
         </div>
-        <div if="showOk">
+        <div if="showOk === true">
             hi
             <div loop="($it, $indx) in ties">
                 <div loop-item="$it"></div>
-                <div if="displayName">NAME DISPLAYED AAAAAAAA</div>
+                <div if="displayName + 8 - 5 > displayName2">NAME DISPLAYED AAAAAAAA</div>
             </div>
             jojo
             <div loop="($it, $indx) in ties">
@@ -120,9 +121,12 @@ class EZCTest extends EZC {
     }
 
     onRender() {
-        //this.setState("ties", [...this.state.ties, "yy"]);
+        this.setState("ties", [...this.state.ties, "yy"]);
         //this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
-        //this.setState("showOk", true);
+        this.setState("showOk", false);
+        this.setState("showOk", true);
+        this.setState("ties", [...this.state.ties, "gg"]);
+        //this.setState("showOk", false);
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
         console.log(`rendering time : ${this.performance}`);
