@@ -48,11 +48,11 @@ class EZCTest extends EZC {
                 <div loop="($ite, $index) in ties">
                     <div loop-item="$ite"></div>
                 </div>
-        
                 <div loop-index="$inde"></div>
             </div>
         </div>
         <div>
+            <br>
             <br>
             <span>
         
@@ -65,6 +65,8 @@ class EZCTest extends EZC {
                 <div if="displayName + 8 - 5 > displayName2">NAME DISPLAYED AAAAAAAA</div>
             </div>
             jojo
+            <br>
+            <br>
             <div loop="($it, $indx) in ties">
                 <div loop-item="$it"></div>
             </div>
@@ -72,8 +74,6 @@ class EZCTest extends EZC {
         </div>
         `;
         `
-        
-
         <div if="showOk">showok bud</div>
         <div loop="(item, index) in fruits">
         <p>out2</p>
@@ -122,7 +122,7 @@ class EZCTest extends EZC {
 
     onRender() {
         this.setState("ties", [...this.state.ties, "yy"]);
-        //this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
+        this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
         this.setState("showOk", false);
         this.setState("showOk", true);
         this.setState("ties", [...this.state.ties, "gg"]);
