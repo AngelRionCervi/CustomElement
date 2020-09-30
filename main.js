@@ -42,6 +42,8 @@ class EZCTest extends EZC {
                 
         </div>
         <div>lalalalala</div>
+        <br>
+        <div class-bind="one + 0.2 < two : color-red">this should NOT be red</div>
         <div class="just-a-container">
             <div loop="($item, $inde) in fruits">
                 <p>hey boyyyyy</p>
@@ -74,6 +76,11 @@ class EZCTest extends EZC {
         </div>
         `;
         `
+        
+
+
+
+
         <div if="showOk">showok bud</div>
         <div loop="(item, index) in fruits">
         <p>out2</p>
@@ -126,6 +133,7 @@ class EZCTest extends EZC {
         this.setState("showOk", false);
         this.setState("showOk", true);
         this.setState("ties", [...this.state.ties, "gg"]);
+        this.setState("one", 5);
         //this.setState("showOk", false);
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         this.performance = Date.now() - this.performance;
