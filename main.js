@@ -8,6 +8,7 @@ class EZCTest extends EZC {
             showOk: true,
             showLast: true,
             showLastest: true,
+            untrue: true,
             displayName: 10,
             displayName2: 2,
             one: 1,
@@ -43,7 +44,7 @@ class EZCTest extends EZC {
         </div>
         <div>lalalalala</div>
         <br>
-        <div class-bind="one + 0.2 < two : color-red">this should NOT be red</div>
+        <div class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
             <div loop="($item, $inde) in fruits">
                 <p>hey boyyyyy</p>
