@@ -46,7 +46,7 @@ class EZCTest extends EZC {
         <br>
         <div class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
-            <div loop="($item, $inde) in bigAssArray">
+            <div loop="($item, $inde) in fruits">
                 <p>hey boyyyyy {{hihi}} {{rclass}}</p>
                 <div loop="($ite, $index) in ties">
                     <div loop-item="$ite"></div>
