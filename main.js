@@ -44,7 +44,7 @@ class EZCTest extends EZC {
         </div>
         <div>lalalalala</div>
         <br>
-        <div class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
+        <div on-mouseover="eventTest, eventTest2" class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
             <div loop="($item, $inde) in fruits">
                 <p>hey boyyyyy {{hihi}} {{rclass}}</p>
@@ -140,6 +140,14 @@ class EZCTest extends EZC {
         this.setState("hihi", "eeettetert");
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
         
+    }
+
+    eventTest(evt) {
+        console.log("event triggered")
+    }
+
+    eventTest2(evt) {
+        console.log("event 2 triggered lol")
     }
 }
 
