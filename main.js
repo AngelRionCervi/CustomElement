@@ -80,8 +80,6 @@ class EZCTest extends EZC {
         
 
 
-
-
         <div if="showOk">showok bud</div>
         <div loop="(item, index) in fruits">
         <p>out2</p>
