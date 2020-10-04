@@ -46,8 +46,8 @@ class EZCTest extends EZC {
         <br>
         <div class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
-            <div loop="($item, $inde) in fruits">
-                <p>hey boyyyyy</p>
+            <div loop="($item, $inde) in bigAssArray">
+                <p>hey boyyyyy {{hihi}} {{rclass}}</p>
                 <div loop="($ite, $index) in ties">
                     <div loop-item="$ite"></div>
                 </div>
@@ -65,7 +65,7 @@ class EZCTest extends EZC {
             hi
             <div loop="($it, $indx) in ties">
                 <div loop-item="$it"></div>
-                <div if="displayName + 8 - 5 > displayName2">NAME DISPLAYED AAAAAAAA {{hihi}}</div>
+                <div if="displayName2 - 1 < $indx">NAME DISPLAYED AAAAAAAA {{hihi}} {{rclass}}</div>
             </div>
             jojo
             <br>
@@ -129,16 +129,19 @@ class EZCTest extends EZC {
     }
 
     onRender() {
+        this.performance = Date.now() - this.performance;
+        console.log(`init rendering time : ${this.performance}`);
         this.setState("ties", [...this.state.ties, "yy"]);
         this.setState("fruits", [...this.state.fruits.filter((fruit) => fruit !== "mango")]);
         this.setState("showOk", false);
+        this.setState("rclass", "hi");
         this.setState("showOk", true);
         this.setState("ties", [...this.state.ties, "gg"]);
         this.setState("one", 5);
         this.setState("hihi", "eee");
+        this.setState("hihi", "eeettetert");
         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
-        this.performance = Date.now() - this.performance;
-        console.log(`rendering time : ${this.performance}`);
+        
     }
 }
 
