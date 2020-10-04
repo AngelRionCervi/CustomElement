@@ -1,5 +1,19 @@
 import EZC from "./lib/EZC.js";
 
+class SomeLilComponent extends EZC {
+    constructor() {
+        super();
+        const shadowRoot = this.attachShadow({ mode: "open" });
+        this.state = {};
+        shadowRoot.innerHTML = /* html */ `
+            <div> child comp </div>
+        `
+        this.props.p();
+    }
+}
+
+customElements.define("child-comp", SomeLilComponent);
+
 class EZCTest extends EZC {
     constructor() {
         super();
@@ -43,6 +57,7 @@ class EZCTest extends EZC {
                 
         </div>
         <div>lalalalala</div>
+        <child-comp props="p: propsTest"></child-comp>
         <br>
         <div on-mouseover="eventTest, eventTest2" class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
@@ -148,6 +163,10 @@ class EZCTest extends EZC {
 
     eventTest2(evt) {
         console.log("event 2 triggered lol")
+    }
+
+    propsTest() {
+        console.log("props lol")
     }
 }
 
