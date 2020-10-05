@@ -1,12 +1,19 @@
-import EZC, { createState, createHTML } from "./lib/EZC.js";
+import EZC, { createComp } from "./lib/EZC.js";
 
-function myComp() {
-    const [state, set] = createState({count: 0, name: "hey"});
-    set.count(2);
-    createHTML("<button on-click='set.count(2)'>add</button> <span> {{count}} </span>")
-    console.log(state)
-}
-myComp()
+
+createComp("t-comp", (createState, registerFn) => {
+    const [state, setState] = createState({count: 0, name: "hey"});
+
+    const add = () => {
+        setState("count", state.count + 1);
+    }
+
+    registerFn({ add });
+    return /* html */ `
+        <button on-click="add">add</button> <span> {{count}} </span> 
+    `
+    // "setState('count', 2)" value should be able to be a computed value ex: "count + 1"
+});
 
 
 class SomeLilComponent extends EZC {
