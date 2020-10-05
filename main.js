@@ -1,4 +1,13 @@
-import EZC from "./lib/EZC.js";
+import EZC, { createState, createHTML } from "./lib/EZC.js";
+
+function myComp() {
+    const [state, set] = createState({count: 0, name: "hey"});
+    set.count(2);
+    createHTML("<button on-click='set.count(2)'>add</button> <span> {{count}} </span>")
+    console.log(state)
+}
+myComp()
+
 
 class SomeLilComponent extends EZC {
     constructor() {
@@ -34,6 +43,11 @@ class EZCTest extends EZC {
             cars: { bmw: "m5", audi: "r8" },
             rclass: "rezrzrzr",
             bigAssArray: new Array(1000).fill(0),
+            b: {
+                eventTest(evt) {
+                    console.log("event triggered")
+                }
+            }
         };
         this.performance = 0;
 
@@ -59,7 +73,7 @@ class EZCTest extends EZC {
         <div>lalalalala</div>
         <child-comp props="p: propsTest"></child-comp>
         <br>
-        <div on-mouseover="eventTest, eventTest2" class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
+        <div on-mouseover="state.b.eventTest ~ eventTest2(3, 'hey', two)" class="text-big" class-bind="one > two : color-red, untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
             <div loop="($item, $inde) in fruits">
                 <p>hey boyyyyy {{hihi}} {{rclass}}</p>
@@ -92,9 +106,6 @@ class EZCTest extends EZC {
         </div>
         `;
         `
-        
-
-
         <div if="showOk">showok bud</div>
         <div loop="(item, index) in fruits">
         <p>out2</p>
@@ -157,16 +168,12 @@ class EZCTest extends EZC {
         
     }
 
-    eventTest(evt) {
-        console.log("event triggered")
-    }
-
-    eventTest2(evt) {
-        console.log("event 2 triggered lol")
+    eventTest2(n, s, v, l) {
+        console.log("event 2 triggered lol", n, s, v)
     }
 
     propsTest() {
-        console.log("props lol")
+    
     }
 }
 
