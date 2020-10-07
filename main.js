@@ -18,7 +18,7 @@ createComp("t-comp", ({ createState, cycle, registerFn }) => {
     registerFn({addThree})
 
     return /* html */ `
-        <button on-click="addThree">add</button> <span> {{count}} </span> 
+        <button on-click="addThree">add</button> <span> {{count}} {{name}}</span> 
     `
 });
 
