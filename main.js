@@ -1,18 +1,25 @@
 import EZC, { createComp } from "./lib/EZC.js";
 
 
-createComp("t-comp", (createState, registerFn) => {
-    const [state, setState] = createState({count: 0, name: "hola"});
+createComp("t-comp", ({ createState, cycle, registerFn }) => {
+    const { state, setState } = createState({count: 0, name: "hola"});
 
-    // const add = () => {
-    //     setState("count", state.count + 1);
-    // }
+    const addThree = () => {
+        setState("count", state.count + 3);
+    }
 
-    // registerFn({ add });
+    cycle({
+        onInit() {
+            setState("count", 4);
+            addThree();
+        }
+    })
+
+    registerFn({addThree})
+
     return /* html */ `
-        <button on-click="setState('count', count + 1)">add</button> <span> {{count}} </span> 
+        <button on-click="addThree">add</button> <span> {{count}} </span> 
     `
-    // "setState('count', 2)" value should be able to be a computed value ex: "count + 1"
 });
 
 
