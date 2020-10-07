@@ -2,7 +2,7 @@ import EZC, { createComp } from "./lib/EZC.js";
 
 
 createComp("t-comp", (createState, registerFn) => {
-    const [state, setState] = createState({count: 0, name: "hey"});
+    const [state, setState] = createState({count: 0, name: "hola"});
 
     const add = () => {
         setState("count", state.count + 1);
@@ -10,7 +10,7 @@ createComp("t-comp", (createState, registerFn) => {
 
     registerFn({ add });
     return /* html */ `
-        <button on-click="add">add</button> <span> {{count}} </span> 
+        <button on-click="setState('count', count + 1)">add</button> <span> {{count}} </span> 
     `
     // "setState('count', 2)" value should be able to be a computed value ex: "count + 1"
 });
@@ -103,6 +103,7 @@ class EZCTest extends EZC {
                 <div loop-item="$it"></div>
                 <div if="displayName2 - 1 < $indx">NAME DISPLAYED AAAAAAAA {{hihi}} {{rclass}}</div>
             </div>
+            <br>
             jojo
             <br>
             <br>
