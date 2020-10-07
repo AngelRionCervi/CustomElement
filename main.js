@@ -4,11 +4,11 @@ import EZC, { createComp } from "./lib/EZC.js";
 createComp("t-comp", (createState, registerFn) => {
     const [state, setState] = createState({count: 0, name: "hola"});
 
-    const add = () => {
-        setState("count", state.count + 1);
-    }
+    // const add = () => {
+    //     setState("count", state.count + 1);
+    // }
 
-    registerFn({ add });
+    // registerFn({ add });
     return /* html */ `
         <button on-click="setState('count', count + 1)">add</button> <span> {{count}} </span> 
     `
