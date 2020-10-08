@@ -1,24 +1,20 @@
 import EZC, { createComp } from "./lib/EZC.js";
 
 
-createComp("t-comp", ({ createState, cycle, registerFn }) => {
+createComp("t-comp", ({ createState, cycle, _fn }) => {
     const { state, setState } = createState({count: 0, name: "hola"});
 
-    const addThree = () => {
-        setState("count", state.count + 3);
-    }
+    setState("count", 1);
+    setState("count", 4.5);
 
-    cycle({
-        onInit() {
-            setState("count", 4);
-            addThree();
+    _fn({
+        addThree() {
+            setState("count", state.count + 0.5);
         }
     })
 
-    registerFn({addThree})
-
     return /* html */ `
-        <button on-click="addThree">add</button> <span> {{count}} {{name}}</span> 
+        <button on-click="addThree">add</button> <span> {{count}} {{name}} </span> 
     `
 });
 
