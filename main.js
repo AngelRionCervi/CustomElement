@@ -1,13 +1,13 @@
 import EZC, { createComp } from "./lib/EZC.js";
 
 
-createComp("t-comp", ({ createState, cycle, _fn }) => {
+createComp("t-comp", ({ createState, cycle, registerFn }) => {
     const { state, setState } = createState({count: 0, name: "hola"});
 
     setState("count", 1);
     setState("count", 4.5);
 
-    _fn({
+    registerFn({
         addThree() {
             setState("count", state.count + 0.5);
         }
