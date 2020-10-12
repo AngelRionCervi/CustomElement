@@ -6,6 +6,7 @@ const increaseCount = () => {
     store.setGlobal("count", store.getGlobal("count") + 1);
 };
 
+
 store.registerMethods("increaseCount", increaseCount);
 
 export default store.getGlobalProps();

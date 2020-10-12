@@ -14,7 +14,7 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
 
     registerFn({
         addGlobalThree() {
-            gState.increaseCount();
+            gState.setGlobal("count", gState.getGlobal("count") + 1);
         },
         addNew() {
             setState("ties", [...state.ties, "eeeeeeeeee"]);
@@ -35,7 +35,7 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
         },
         onRender() {
             const endTime = Date.now() - startTime;
-            console.log("rendering time : " + endTime)
+            console.log("rendering time : " + endTime);
         }
     })
 
