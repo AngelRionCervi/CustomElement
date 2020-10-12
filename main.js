@@ -1,17 +1,22 @@
 import EZC, { createComp } from "./lib/EZC.js";
+import store from "./lib/Store.js";
 
+store.setNewKeys({ count: 4 });
 
-createComp("t-comp", ({ createState, cycle, registerFn }) => {
+const increaseCount = () => {
+    store.setGlobal("count", store.getGlobal("count") + 1);
+};
+
+createComp("t-comp", ({ createState, cycle, registerFn, useGlobal }) => {
     const initState = {
-        count: 0,
+        count: useGlobal("count"),
         name: "hola",
         fruits: ["melon", "berry"],
-        ties: ["blue", "red"]
-    }
+        ties: ["blue", "red"],
+    };
     const { state, setState } = createState(initState);
 
-    setState("count", 1);
-    setState("count", 3);
+    store.setGlobal("count", 2)
 
     setState("ties", [...state.ties, "green"]);
 
@@ -21,8 +26,8 @@ createComp("t-comp", ({ createState, cycle, registerFn }) => {
         },
         addNew() {
             setState("ties", [...state.ties, "eeeeeeeeee"]);
-        }
-    })
+        },
+    });
 
     return /* html */ `
     <style>
@@ -44,9 +49,8 @@ createComp("t-comp", ({ createState, cycle, registerFn }) => {
                 <div loop-index="$inde"></div>
             </div>
         </div>
-    `
+    `;
 });
-
 
 // class SomeLilComponent extends EZC {
 //     constructor() {
@@ -107,7 +111,7 @@ createComp("t-comp", ({ createState, cycle, registerFn }) => {
 //         </style>
 
 //         <div class="just-a-container">
-                
+
 //         </div>
 //         <div>lalalalala</div>
 //         <child-comp props="p: propsTest"></child-comp>
@@ -126,7 +130,7 @@ createComp("t-comp", ({ createState, cycle, registerFn }) => {
 //             <br>
 //             <br>
 //             <span>
-        
+
 //             </span>
 //         </div>
 //         <div if="showOk === true">
@@ -205,7 +209,7 @@ createComp("t-comp", ({ createState, cycle, registerFn }) => {
 //         this.setState("hihi", "eee");
 //         this.setState("hihi", "eeettetert");
 //         //this.setState("ties", [...this.state.ties, "BIG TREE", "SAPLING"]);
-        
+
 //     }
 
 //     eventTest2(n, s, v, l) {
@@ -213,7 +217,7 @@ createComp("t-comp", ({ createState, cycle, registerFn }) => {
 //     }
 
 //     propsTest() {
-    
+
 //     }
 // }
 
