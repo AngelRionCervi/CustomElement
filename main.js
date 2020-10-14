@@ -1,6 +1,5 @@
-import { createComp } from "./lib/EZC.js";
+import { createComp } from "./dist/EZC.js";
 import gState from "./state.js";
-console.log(gState)
 
 createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
     const initState = {

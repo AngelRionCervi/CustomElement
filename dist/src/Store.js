@@ -14,16 +14,18 @@ const main = () => {
             return this;
         },
         __get(symbol) {
-            if (!store.has(symbol)) return;
+            if (!store.has(symbol))
+                return this;
             return store.get(symbol).state;
         },
         getEntry(symbol) {
-            if (!store.has(symbol)) return;
+            if (!store.has(symbol))
+                return this;
             return store.get(symbol);
         },
         createGlobalState(obj) {
             for (const [key, val] of Object.entries(obj)) {
-                if (typeof val === "function")  {
+                if (typeof val === "function") {
                     this.getGlobal()[key] = val;
                     continue;
                 }
@@ -46,11 +48,12 @@ const main = () => {
             entry.corStates.forEach((symbol) => {
                 const ctx = this.getEntry(symbol).ctx;
                 ctx.setState(key, entry.val);
-            })
+            });
             return this;
         },
         getGlobal(key = null) {
-            if (!key) return store.get(globalKey);
+            if (!key)
+                return store.get(globalKey);
             return store.get(globalKey)[key].val;
         },
         getGlobalProps() {
@@ -62,5 +65,4 @@ const main = () => {
         },
     };
 };
-
 export default main();

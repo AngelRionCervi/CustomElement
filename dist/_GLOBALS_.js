@@ -39,7 +39,7 @@ const options = {
         "on-canplaythrough",
         "on-copy",
     ],
-    TEXT_BIND_REGEXP: /\{{([^\}\}]+)+\}}/,
+    TEXT_BIND_REGEXP: /\{{([^\}\}]+)+\}}/g,
     IF_SCOPE_REGEXP: /(?=\()(?=((?:(?=.*?\((?!.*?\2)(.*\)(?!.*\3).*))(?=.*?\)(?!.*?\3)(.*)).)+?.*?(?=\2)[^(]*(?=\3$)))/g,
     LOOP_BRACE_REGEXP: /\(([^)]+)\)/,
     LOOP_IN_REGEX: /in(?!.*in)/,

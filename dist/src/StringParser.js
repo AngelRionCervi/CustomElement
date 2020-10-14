@@ -1,5 +1,4 @@
 import * as _H from "./helpers.js";
-
 const AND = "&&";
 const OR = "||";
 const EQUAL = "===";
@@ -32,37 +31,41 @@ const stringRegexp = /(['])((\\{2})*|(.*?[^\\](\\{2})*))\1/;
 const numberRegexp = /^-?\d+\.?\d*$/;
 const dashRegex = /\-/g;
 const digitRegex = /([0-9]*[.])?[0-9]+/;
-
 const indexOfRegex = (arr, regex, last = false) => {
     let res;
     for (let u = 0; u < arr.length; u++) {
-        if (arr[u] && arr[u].toString().length > 1) continue; // avoid matching with negative numbers...
+        if (arr[u] && arr[u].toString().length > 1)
+            continue; // avoid matching with negative numbers...
         if (regex.test(arr[u])) {
             res = u;
-            if (!last) break;
+            if (!last)
+                break;
         }
     }
     return res;
 };
-
 const computeNumber = (str) => {
     const matches = str.match(dashRegex) || [];
-    const number = str.match(digitRegex)[0];
+    const match = str.match(digitRegex);
+    if (match === null)
+        return 0;
+    const number = match[0];
     return matches.length % 2 === 0 ? parseFloat(number) : parseFloat(`-${number}`);
 };
-
 export const getKeysUsed = (str) => {
-    if (!str) return [];
+    if (!str)
+        return [];
     const isVar = (str) => !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str);
     const isLoop = (str) => str.includes(IN);
     const keys = [];
     _H.splitTrim(str, fullArRegex).forEach((val) => {
-        if (isLoop(val)) keys.push(_H.splitTrim(val, IN).pop());
-        else if (isVar(val)) keys.push(val);
-    })
+        if (isLoop(val))
+            keys.push(_H.splitTrim(val, IN).pop() || "");
+        else if (isVar(val))
+            keys.push(val);
+    });
     return keys;
-}
-
+};
 export default (_state) => {
     return {
         getPrimFromSplit(split) {
@@ -81,9 +84,7 @@ export default (_state) => {
             };
             const isVar = (str) => !numberRegexp.test(str) && !stringRegexp.test(str) && !arOpMatchRegex.test(str);
             const isBoolified = (str) => (str.match(notRegex) || []).join().length % 2 !== 0;
-
             let split = _H.splitTrim(exp, arOpMatchRegex);
-
             for (let u = 0; u < split.length; u++) {
                 // first detect and convert state vars -> use this.getPrimFromStrArr()
                 const nakedExp = _H.replaceAll(split[u], NOT, "");
@@ -110,13 +111,15 @@ export default (_state) => {
                             split[u] = undefined;
                             break;
                     }
-                } else {
+                }
+                else {
                     if (!numberRegexp.test(split[u]) && /\d/.test(split[u])) {
                         split[u] = computeNumber(split[u]);
                     }
                     if (numberRegexp.test(split[u])) {
                         split[u] = parseFloat(split[u]);
-                    } else if (stringRegexp.test(split[u])) {
+                    }
+                    else if (stringRegexp.test(split[u])) {
                         split[u] = _H.replaceAll(split[u], stringDelimiter, "");
                     }
                 }
@@ -148,7 +151,6 @@ export default (_state) => {
             }
             const notMatches = (exp.match(notRegex) || []).join();
             const res = notMatches.length % 2 === 0 ? split[0] : !split[0];
-
             return res;
         },
         computeIfBlock(str) {
@@ -156,41 +158,42 @@ export default (_state) => {
                 .splitTrim(str, OR)
                 .map((s) => _H.splitTrim(s, AND))
                 .reduce((or, group) => {
-                    return or
-                        ? or
-                        : group.reduce((and, cond) => {
-                              let res;
-                              const symbolMatch = cond.match(comparisonRegexp)?.[0];
-                              let r1, r2;
-                              if (!symbolMatch) {
-                                res = this.computeExp(cond);
-                                [r1, r2] = [false, undefined];
-                              } else {
-                                [r1, r2] = _H.splitTrim(cond, symbolMatch).map((c) => this.computeExp(c));
-                              }
-                              switch (symbolMatch) {
-                                  case EQUAL:
-                                      res = r1 === r2;
-                                      break;
-                                  case NOT_EQUAL:
-                                      res = r1 !== r2;
-                                      break;
-                                  case MORE:
-                                      res = r1 > r2;
-                                      break;
-                                  case LESS:
-                                      res = r1 < r2;
-                                      break;
-                                  case MORE_OR_EQUAL:
-                                      res = r1 >= r2;
-                                      break;
-                                  case LESS_OR_EQUAL:
-                                      res = r1 <= r2;
-                                      break;
-                              }
-                              return and ? res : false;
-                          }, true);
-                }, false);
+                return or
+                    ? or
+                    : group.reduce((and, cond) => {
+                        let res;
+                        const symbolMatch = cond.match(comparisonRegexp)?.[0];
+                        let r1, r2;
+                        if (!symbolMatch) {
+                            res = this.computeExp(cond);
+                            [r1, r2] = [false, undefined];
+                        }
+                        else {
+                            [r1, r2] = _H.splitTrim(cond, symbolMatch).map((c) => this.computeExp(c));
+                        }
+                        switch (symbolMatch) {
+                            case EQUAL:
+                                res = r1 === r2;
+                                break;
+                            case NOT_EQUAL:
+                                res = r1 !== r2;
+                                break;
+                            case MORE:
+                                res = r1 > r2;
+                                break;
+                            case LESS:
+                                res = r1 < r2;
+                                break;
+                            case MORE_OR_EQUAL:
+                                res = r1 >= r2;
+                                break;
+                            case LESS_OR_EQUAL:
+                                res = r1 <= r2;
+                                break;
+                        }
+                        return and ? res : false;
+                    }, true);
+            }, false);
         },
         parse(str) {
             // takes a scoped (or not) if statement as string, matches it's blocks () and processes them one after the other;

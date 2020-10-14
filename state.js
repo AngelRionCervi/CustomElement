@@ -1,4 +1,4 @@
-import { store } from "./lib/EZC.js";
+import { store } from "./dist/EZC.js";
 
 store.createGlobalState({
     count: 1,

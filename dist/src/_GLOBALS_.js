@@ -1,4 +1,4 @@
-export default {
+const options = {
     LOOP_BIND: "loop",
     LOOP_ITEM: "loop-item",
     LOOP_KEY: "loop-key",
@@ -48,3 +48,4 @@ export default {
     DOUBLEDOT_DELIMITER: ":",
     LOOP_VAR_REGEX: /\B\$\w+/g
 };
+export default options;
