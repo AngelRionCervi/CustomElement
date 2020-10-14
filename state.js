@@ -16,4 +16,4 @@ const increaseALot = () => {
 
 store.setGlobal("increaseALot", increaseALot);
 
-export default store.getGlobalProps();
+export default store.getGlobalState();

@@ -56,7 +56,7 @@ const main = () => {
                 return store.get(globalKey);
             return store.get(globalKey)[key].val;
         },
-        getGlobalProps() {
+        getGlobalState() {
             return {
                 ...this.getGlobal(),
                 getGlobal: this.getGlobal,
