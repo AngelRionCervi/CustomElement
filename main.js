@@ -1,5 +1,6 @@
 import { createComp } from "./lib/EZC.js";
 import gState from "./state.js";
+console.log(gState)
 
 createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
     const initState = {
@@ -14,7 +15,7 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
 
     registerFn({
         addGlobalThree() {
-            gState.setGlobal("count", gState.getGlobal("count") + 1);
+            gState.increaseALot();
         },
         addNew() {
             setState("ties", [...state.ties, "eeeeeeeeee"]);
@@ -61,4 +62,3 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
         </div>
     `;
 });
-
