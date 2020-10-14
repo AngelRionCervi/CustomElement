@@ -50,7 +50,7 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
             }
         </style>
         <button on-click="addGlobalThree ~ addNew">add</button> <span> {{count}} {{name}} </span> 
-        <div on-mouseover="eventStuff ~ eventTest2(3, 'hey', two)" class="text-big" class-bind="count > 3 : color-red, untrue: underline">this should NOT be red</div>
+        <div on-mouseover="eventStuff ~ eventTest2(3, 'hey', two)" class="text-big" class-bind="count > 3 : color-red ~ untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
             <div loop="($item, $inde) in fruits">
                 <p>hey boyyyyy {{name}} {{count}}</p>
