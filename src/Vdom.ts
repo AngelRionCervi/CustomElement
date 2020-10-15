@@ -11,10 +11,10 @@ export default (_this: any, symbol: Symbol) => {
             return Array.from(element.parentNode.children).indexOf(element);
         }
         return -1;
-    }
+    };
     const attrFind = (attrs: any[], key: string): any => {
         return attrs.find((at) => at.name === key);
-    }
+    };
     return {
         scanNode() {
             tree = this.buildVdom().filter((e) => e.tag !== "STYLE");
@@ -41,13 +41,24 @@ export default (_this: any, symbol: Symbol) => {
             return results;
         },
         getAttributes(node: HTMLElement): any[] {
-            const possibleAttrs = [_G.LOOP_BIND, _G.LOOP_ITEM, _G.LOOP_INDEX, _G.IF_BIND, _G.CLASS_BIND, ..._G.EVENTS_ATTR];
+            const possibleAttrs = [
+                _G.LOOP_BIND,
+                _G.LOOP_ITEM,
+                _G.LOOP_INDEX,
+                _G.IF_BIND,
+                _G.CLASS_BIND,
+                ..._G.EVENTS_ATTR,
+            ];
             const nodeAttrs: any[] = [];
             possibleAttrs.forEach((attrName) => {
                 if (node.hasAttribute(attrName)) {
                     const att: string | null = node.getAttribute(attrName);
                     if (typeof att === "string") {
-                        nodeAttrs.push({ name: attrName, value: att, keysUsed: getKeysUsed(att.split(":").shift() || "") });
+                        nodeAttrs.push({
+                            name: attrName,
+                            value: att,
+                            keysUsed: getKeysUsed(att.split(":").shift() || ""),
+                        });
                     }
                 }
             });
@@ -146,21 +157,13 @@ export default (_this: any, symbol: Symbol) => {
         },
         buildIfChildren(vElem: vElem, key: any) {
             [...key.matchAll(_G.LOOP_VAR_REGEX)].forEach((m) => {
-                console.log(key, m);
                 const corCache = _H.findCache(m[0], vElem, true);
-                const targetLoop: vElem | false = corCache.result ? vElem : false;
-                if (targetLoop) {
-                    if (m[0].includes(".")) { // dealing with obj
-                        const fullPath = m[0].split(".").splice(1, 1).join();
-                        let objVal = targetLoop.cache[corCache.type][fullPath];
-                        if (typeof objVal === "string") {
-                            objVal = `'${objVal}'`;
-                        }
-                        key = key.replace(m[0], objVal);
-                        console.log("RESULT", key, corCache.result, fullPath, targetLoop.cache[corCache.type])
-                    } else {
-                        key = key.replace(m[0], targetLoop.cache[corCache.type]);
-                    }
+                if (corCache.result) {
+                    let cachedVal: string = m[0].includes(".")
+                        ? vElem.cache[corCache.type][m[0].split(".").splice(1, 1).join()]
+                        : vElem.cache[corCache.type];
+                    if (typeof cachedVal === "string") cachedVal = `'${cachedVal}'`;
+                    key = key.replace(m[0], cachedVal);
                 }
             });
             const condition = StringParser(store.__get(symbol)).parse(key);
@@ -205,7 +208,7 @@ export default (_this: any, symbol: Symbol) => {
             const varRes = _H.findCache(attrItem?.value, vElem);
             const indexRes = _H.findCache(attrIndex?.value, vElem);
             if (varRes) return { vElem, type: "value" };
-            else if (indexRes) return { vElem, type: "key" }
+            else if (indexRes) return { vElem, type: "key" };
             return false;
         },
         getVChildren(type: string | null = null, key: string | null = null, starting: any[] = tree): vElem[] {

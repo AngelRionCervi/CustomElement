@@ -41,13 +41,24 @@ export default (_this, symbol) => {
             return results;
         },
         getAttributes(node) {
-            const possibleAttrs = [_G.LOOP_BIND, _G.LOOP_ITEM, _G.LOOP_INDEX, _G.IF_BIND, _G.CLASS_BIND, ..._G.EVENTS_ATTR];
+            const possibleAttrs = [
+                _G.LOOP_BIND,
+                _G.LOOP_ITEM,
+                _G.LOOP_INDEX,
+                _G.IF_BIND,
+                _G.CLASS_BIND,
+                ..._G.EVENTS_ATTR,
+            ];
             const nodeAttrs = [];
             possibleAttrs.forEach((attrName) => {
                 if (node.hasAttribute(attrName)) {
                     const att = node.getAttribute(attrName);
                     if (typeof att === "string") {
-                        nodeAttrs.push({ name: attrName, value: att, keysUsed: getKeysUsed(att.split(":").shift() || "") });
+                        nodeAttrs.push({
+                            name: attrName,
+                            value: att,
+                            keysUsed: getKeysUsed(att.split(":").shift() || ""),
+                        });
                     }
                 }
             });
@@ -145,22 +156,14 @@ export default (_this, symbol) => {
         },
         buildIfChildren(vElem, key) {
             [...key.matchAll(_G.LOOP_VAR_REGEX)].forEach((m) => {
-                console.log(key, m);
                 const corCache = _H.findCache(m[0], vElem, true);
-                const targetLoop = corCache.result ? vElem : false;
-                if (targetLoop) {
-                    if (m[0].includes(".")) { // dealing with obj
-                        const fullPath = m[0].split(".").splice(1, 1).join();
-                        let objVal = targetLoop.cache[corCache.type][fullPath];
-                        if (typeof objVal === "string") {
-                            objVal = `'${objVal}'`;
-                        }
-                        key = key.replace(m[0], objVal);
-                        console.log("RESULT", key, corCache.result, fullPath, targetLoop.cache[corCache.type]);
-                    }
-                    else {
-                        key = key.replace(m[0], targetLoop.cache[corCache.type]);
-                    }
+                if (corCache.result) {
+                    let cachedVal = m[0].includes(".")
+                        ? vElem.cache[corCache.type][m[0].split(".").splice(1, 1).join()]
+                        : vElem.cache[corCache.type];
+                    if (typeof cachedVal === "string")
+                        cachedVal = `'${cachedVal}'`;
+                    key = key.replace(m[0], cachedVal);
                 }
             });
             const condition = StringParser(store.__get(symbol)).parse(key);

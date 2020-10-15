@@ -46,6 +46,6 @@ const options = {
     PARAM_DELIMITER: ",",
     EXP_DELIMITER: "~",
     DOUBLEDOT_DELIMITER: ":",
-    LOOP_VAR_REGEX: /\$\w+(?:\.+\w+)+/g
+    LOOP_VAR_REGEX: /\$[.a-zA-Z0-9]+/g
 };
 export default options;
