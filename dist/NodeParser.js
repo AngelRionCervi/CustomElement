@@ -27,13 +27,14 @@ export default (_this, state) => {
             const splitAtt = attVal.split(_G.EXP_DELIMITER);
             const attClassesList = splitAtt.map((e) => _H.splitTrim(e, _G.DOUBLEDOT_DELIMITER).pop());
             const baseClasses = curClassName.split(" ").filter((bc) => !attClassesList.includes(bc));
-            return baseClasses.join(" ") + splitAtt.reduce((acc, exp) => {
-                const [cond, clazz] = exp.split(_G.DOUBLEDOT_DELIMITER);
-                if (StringParser(state).parse(cond)) {
-                    return acc + clazz;
-                }
-                return acc;
-            }, "");
+            return (baseClasses.join(" ") +
+                splitAtt.reduce((acc, exp) => {
+                    const [cond, clazz] = exp.split(_G.DOUBLEDOT_DELIMITER);
+                    if (StringParser(state).parse(cond)) {
+                        return acc + clazz;
+                    }
+                    return acc;
+                }, ""));
         },
         parseTextContent(baseText, attributes, vElem) {
             return attributes.reduce((acc, res) => {
@@ -44,7 +45,8 @@ export default (_this, state) => {
             }, baseText);
         },
         createEventListener(att, node) {
-            const [eventType, callbacks] = [att.name.replace("-", "").toLowerCase(), _H.splitTrim(att.value, _G.EXP_DELIMITER)];
+            const eventType = att.name.replace("-", "").toLowerCase();
+            const callbacks = _H.splitTrim(att.value, _G.EXP_DELIMITER);
             node[eventType] = (evt) => {
                 callbacks.forEach((cb) => {
                     const argsB = cb.match(_G.LOOP_BRACE_REGEXP);
@@ -61,6 +63,6 @@ export default (_this, state) => {
                     throw new Error(`Callback ${fnName} doesn't exist on component "${_this.tagName.toLowerCase()}".`);
                 });
             };
-        }
+        },
     };
 };

@@ -158,7 +158,7 @@ export default (_this: any, symbol: Symbol) => {
         buildIfChildren(vElem: vElem, key: any) {
             [...key.matchAll(_G.LOOP_VAR_REGEX)].forEach((m) => {
                 const corCache = _H.findCache(m[0], vElem, true);
-                if (corCache.result) {
+                if (corCache) {
                     let cachedVal: string = m[0].includes(_G.OBJECT_SEPARATOR)
                         ? vElem.cache[corCache.type][m[0].split(_G.OBJECT_SEPARATOR).splice(1, 1).join()]
                         : vElem.cache[corCache.type];

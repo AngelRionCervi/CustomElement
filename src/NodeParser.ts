@@ -14,25 +14,28 @@ export default (_this: any, state: any) => {
                 if (att.name && att.name.includes("on-")) {
                     this.createEventListener(att, node);
                 } else {
-                    switch(att.name) {
+                    switch (att.name) {
                         case _G.CLASS_BIND:
                             node.className = this.parseClasses(att.value, node.className);
                             break;
                     }
                 }
-            })
+            });
         },
         parseClasses(attVal: string, curClassName: string): string {
             const splitAtt = attVal.split(_G.EXP_DELIMITER);
             const attClassesList = splitAtt.map((e) => _H.splitTrim(e, _G.DOUBLEDOT_DELIMITER).pop());
             const baseClasses = curClassName.split(" ").filter((bc: string) => !attClassesList.includes(bc));
-            return baseClasses.join(" ") + splitAtt.reduce((acc: string, exp: string) => {
-                const [cond, clazz] = exp.split(_G.DOUBLEDOT_DELIMITER);
-                if (StringParser(state).parse(cond)) {
-                    return acc + clazz;
-                } 
-                return acc;
-            }, "")
+            return (
+                baseClasses.join(" ") +
+                splitAtt.reduce((acc: string, exp: string) => {
+                    const [cond, clazz] = exp.split(_G.DOUBLEDOT_DELIMITER);
+                    if (StringParser(state).parse(cond)) {
+                        return acc + clazz;
+                    }
+                    return acc;
+                }, "")
+            );
         },
         parseTextContent(baseText: string, attributes: any[], vElem: vElem): string {
             return attributes.reduce((acc, res) => {
@@ -42,7 +45,8 @@ export default (_this: any, state: any) => {
             }, baseText);
         },
         createEventListener(att: any, node: any): void {
-            const [eventType, callbacks] = [att.name.replace("-", "").toLowerCase(), _H.splitTrim(att.value, _G.EXP_DELIMITER)] as [string, string[]];
+            const eventType: string = att.name.replace("-", "").toLowerCase();
+            const callbacks: string[] = _H.splitTrim(att.value, _G.EXP_DELIMITER);
             node[eventType] = (evt: Event) => {
                 callbacks.forEach((cb: string) => {
                     const argsB: RegExpMatchArray | null = cb.match(_G.LOOP_BRACE_REGEXP);
@@ -50,15 +54,15 @@ export default (_this: any, state: any) => {
                     if (argsB) {
                         args = StringParser(state).getPrimFromSplit(_H.splitTrim(argsB[1], _G.PARAM_DELIMITER));
                         fnName = cb.split(_G.LOOP_BRACE_REGEXP).shift();
-                    } 
+                    }
                     const fn = _H.resolvePath(_this, fnName);
                     if (fn) {
                         fn(...args);
                         return;
-                    } 
-                    throw new Error(`Callback ${ fnName } doesn't exist on component "${ _this.tagName.toLowerCase() }".`)
-                })
-            }
-        }
-    }
-}
+                    }
+                    throw new Error(`Callback ${fnName} doesn't exist on component "${_this.tagName.toLowerCase()}".`);
+                });
+            };
+        },
+    };
+};
