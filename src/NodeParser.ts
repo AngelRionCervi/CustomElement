@@ -41,7 +41,6 @@ export default (_this: any, state: any) => {
                 return acc.replace(res.match, _H.resolvePath(state, res.key));
             }, baseText);
         },
-        
         createEventListener(att: any, node: any): void {
             const [eventType, callbacks] = [att.name.replace("-", "").toLowerCase(), _H.splitTrim(att.value, _G.EXP_DELIMITER)] as [string, string[]];
             node[eventType] = (evt: Event) => {

@@ -63,7 +63,8 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
             <div loop="($item, $inde) in fruits">
                 <p>hey boyyyyy {{$item.name}} {{count}}</p>
                 <div loop="($ite, $index) in ties">
-                    <br>hh {{$ite.color}}
+                    <br>hh {{$ite.color}} {{$index}}
+                    <div if="$ite.color === 'blue'">HIIIIIIIIIIIIII</div>
                 </div>
                 <div loop-index="$inde"></div>
             </div>
