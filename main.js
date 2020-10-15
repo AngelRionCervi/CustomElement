@@ -2,7 +2,7 @@ import { createComp } from "./dist/EZC.js";
 import gState from "./state.js";
 
 createComp("simple-counter", ({ createState }) => {
-    const { state, setState } = createState({ count: 0 });
+    createState({ count: 0 });
 
     return /* html */ `
         <p>{{count}}</p>
