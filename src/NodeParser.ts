@@ -7,7 +7,7 @@ export default (_this: any, state: any) => {
         parse(vElem: vElem): any {
             const { attributes, node, cache, type } = vElem;
             if (type === "text" && cache.hasOwnProperty("baseText")) {
-                node.textContent = this.parseTextContent(cache.baseText, attributes);
+                node.textContent = this.parseTextContent(cache.baseText, attributes, vElem);
             }
             if (attributes.length === 0) return node;
             attributes.forEach((att) => {
@@ -34,8 +34,10 @@ export default (_this: any, state: any) => {
                 return acc;
             }, "")
         },
-        parseTextContent(baseText: string, attributes: any[]): string {
+        parseTextContent(baseText: string, attributes: any[], vElem: vElem): string {
             return attributes.reduce((acc, res) => {
+                const cachedVal = _H.findCache(res.key, vElem);
+                if (cachedVal) return acc.replace(res.match, cachedVal);
                 return acc.replace(res.match, _H.resolvePath(state, res.key));
             }, baseText);
         },

@@ -1,12 +1,21 @@
 import { createComp } from "./dist/EZC.js";
 import gState from "./state.js";
 
+createComp("simple-counter", ({ createState }) => {
+    const { state, setState } = createState({ count: 0 });
+
+    return /* html */ `
+        <p>{{count}}</p>
+        <button on-click="setState('count', count + 1)">add</button>
+    `;
+});
+
 createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
     const initState = {
         count: useGlobal("count"),
         name: "hola",
-        fruits: ["melon", "berry"],
-        ties: ["blue", "red"],
+        fruits: [{ name: "melon" }, "berry"],
+        ties: [{ color: "blue" }, { color: "red" }],
     };
     const { state, setState } = createState(initState);
 
@@ -20,14 +29,14 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
             setState("ties", [...state.ties, "eeeeeeeeee"]);
         },
         eventStuff(evt) {
-            console.log("evt lol", evt)
+            console.log("evt lol", evt);
         },
         eventTest2(t, s, w) {
-            console.log(t, s, w)
-        }
+            console.log(t, s, w);
+        },
     });
 
-    let startTime; 
+    let startTime;
 
     cycle({
         beforeInit() {
@@ -36,8 +45,8 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
         onRender() {
             const endTime = Date.now() - startTime;
             console.log("rendering time : " + endTime);
-        }
-    })
+        },
+    });
 
     return /* html */ `
         <style>
@@ -52,9 +61,9 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
         <div on-mouseover="eventStuff ~ eventTest2(3, 'hey', two)" class="text-big" class-bind="count > 3 : color-red ~ untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
             <div loop="($item, $inde) in fruits">
-                <p>hey boyyyyy {{name}} {{count}}</p>
+                <p>hey boyyyyy {{$item.name}} {{count}}</p>
                 <div loop="($ite, $index) in ties">
-                    <div loop-item="$ite"></div>
+                    <br>hh {{$ite.color}}
                 </div>
                 <div loop-index="$inde"></div>
             </div>
