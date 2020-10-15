@@ -1,11 +1,13 @@
-export const resolvePath = (obj: any, path: string, separator: string = "."): any => {
+import _G from "./_GLOBALS_.js";
+
+export const resolvePath = (obj: any, path: string, separator: string = _G.OBJECT_SEPARATOR): any => {
     return path
         .trim()
         .split(separator)
         .reduce((prev, curr) => prev && prev[curr], obj);
 };
 
-export const setPath = (obj: any, path: string, value: any, separator: string = "."): void => {
+export const setPath = (obj: any, path: string, value: any, separator: string = _G.OBJECT_SEPARATOR): void => {
     path.trim()
         .split(separator)
         .reduce((o, p, i) => {
@@ -23,7 +25,7 @@ export const replaceAll = (s: string, m: string, r: any, p?: any): string => {
 
 export const findCache = (variable: string, vElem: vElem, returnType: boolean = false): any => {
     if (!variable) return null;
-    const [baseVar, fullPath] = [splitTrim(variable, ".").shift(), variable.split(".").splice(1, 1).join()];
+    const [baseVar, fullPath] = [splitTrim(variable, _G.OBJECT_SEPARATOR).shift(), variable.split(_G.OBJECT_SEPARATOR).splice(1, 1).join()];
     const isObjectPath = fullPath !== "";
     while (vElem) {
         if (baseVar === vElem?.cache?.variable) {

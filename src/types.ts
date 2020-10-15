@@ -18,6 +18,7 @@ interface options {
     PARAM_DELIMITER: string;
     EXP_DELIMITER: string;
     DOUBLEDOT_DELIMITER: string;
+    OBJECT_SEPARATOR: string;
     LOOP_VAR_REGEX: RegExp;
 }
 

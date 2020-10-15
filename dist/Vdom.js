@@ -158,8 +158,8 @@ export default (_this, symbol) => {
             [...key.matchAll(_G.LOOP_VAR_REGEX)].forEach((m) => {
                 const corCache = _H.findCache(m[0], vElem, true);
                 if (corCache.result) {
-                    let cachedVal = m[0].includes(".")
-                        ? vElem.cache[corCache.type][m[0].split(".").splice(1, 1).join()]
+                    let cachedVal = m[0].includes(_G.OBJECT_SEPARATOR)
+                        ? vElem.cache[corCache.type][m[0].split(_G.OBJECT_SEPARATOR).splice(1, 1).join()]
                         : vElem.cache[corCache.type];
                     if (typeof cachedVal === "string")
                         cachedVal = `'${cachedVal}'`;
