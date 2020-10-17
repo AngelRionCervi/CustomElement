@@ -133,11 +133,23 @@ export default (_this, symbol) => {
             return vElem;
         },
         buildLoopChildren(vElem, key, index, variable) {
+            console.log("loop", key, index, variable);
+            if (key.includes(_G.RANGE_LOOP_DOTS)) {
+                const [start, finish] = _H.splitTrim(key, _G.RANGE_LOOP_DOTS).map((n) => parseInt(n));
+                for (let u = start; u < finish + 1; u++) {
+                    vElem.children = [
+                        ...vElem.children,
+                        ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value: u.toString(), key, variable, index, i: u - start }),
+                    ];
+                }
+                vElem.node.innerHTML = "";
+                return;
+            }
             const objToLoop = _H.resolvePath(store.__get(symbol), key);
-            Object.entries(objToLoop).forEach(([key, value]) => {
+            Object.entries(objToLoop).forEach(([key, value], i) => {
                 vElem.children = [
                     ...vElem.children,
-                    ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value, key, variable, index }),
+                    ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value, key, variable, index, i }),
                 ];
             });
             vElem.node.innerHTML = "";

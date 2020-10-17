@@ -94,7 +94,6 @@ export default (_this: any, symbol: Symbol) => {
         },
         createVelem(node: HTMLElement, parent: vElem, cache: any): vElem {
             const { attributes, type, variable, index, key } = this.getNodeInfo(node);
-
             const vElem = {
                 attributes,
                 updateKeys: (attributes || []).map((at) => at.keysUsed).flat(),
@@ -134,11 +133,23 @@ export default (_this: any, symbol: Symbol) => {
             return vElem;
         },
         buildLoopChildren(vElem: vElem, key: any, index: any, variable: string | null) {
+            console.log("loop", key, index, variable);
+            if (key.includes(_G.RANGE_LOOP_DOTS)) {
+                const [start, finish] = _H.splitTrim(key, _G.RANGE_LOOP_DOTS).map((n: string) => parseInt(n)) as [number, number];
+                for (let u = start; u < finish + 1; u++) {
+                    vElem.children = [
+                        ...vElem.children,
+                        ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value: u.toString(), key, variable, index, i: u - start }),
+                    ];
+                }
+                vElem.node.innerHTML = "";
+                return;
+            }
             const objToLoop = _H.resolvePath(store.__get(symbol), key);
-            Object.entries(objToLoop).forEach(([key, value]) => {
+            Object.entries(objToLoop).forEach(([key, value], i) => {
                 vElem.children = [
                     ...vElem.children,
-                    ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value, key, variable, index }),
+                    ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value, key, variable, index, i }),
                 ];
             });
             vElem.node.innerHTML = "";

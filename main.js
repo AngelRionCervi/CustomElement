@@ -17,7 +17,7 @@ createComp("simple-counter", ({ createState, register }) => {
         <p>{{count}}</p>
         <button on-click="setState('count', count + 1)">add</button>
         <img src="{{ bgSrc }}">
-        <div loop="$n in 0..10">yo</div>
+        <div loop="$n in 0..10"> {{ $n }} </div>
     `;
 });
 

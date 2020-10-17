@@ -20,6 +20,7 @@ interface options {
     DOUBLEDOT_DELIMITER: string;
     OBJECT_SEPARATOR: string;
     LOOP_VAR_REGEX: RegExp;
+    RANGE_LOOP_DOTS: string;
 }
 
 interface vElem {
