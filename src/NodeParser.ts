@@ -1,5 +1,5 @@
 import _G from "./_GLOBALS_.js";
-import StringParser, { parseTextContent } from "./StringParser.js";
+import StringParser, { parseTextWithVar} from "./StringParser.js";
 import * as _H from "./helpers.js";
 
 export default (_this: any, state: any) => {
@@ -12,6 +12,7 @@ export default (_this: any, state: any) => {
             }
             if (attributes.length === 0) return node;
             attributes.forEach((att) => {
+                console.log(att)
                 if (att.name && att.name.includes("on-")) {
                     this.createEventListener(att, node);
                 } else {
@@ -20,7 +21,7 @@ export default (_this: any, state: any) => {
                             node.className = this.parseClasses(att.value, node.className);
                             break;
                         default:
-                            node.setAttribute(att.name, this.parseAttr(att.value, vElem));
+                            node.setAttribute(att.name, parseTextWithVar(state, vElem, att.value));
                             break;
                     }
                 }
@@ -42,14 +43,10 @@ export default (_this: any, state: any) => {
             );
         },
         parseTextContent(baseText: string, attributes: any[], vElem: vElem): string {
-            return attributes.reduce((acc, res) => {
-                const cachedVal = _H.findCache(res.key, vElem);
-                if (cachedVal) return acc.replace(res.match, cachedVal);
-                return acc.replace(res.match, _H.resolvePath(state, res.key));
+            return attributes.reduce((acc, res) => { // refactor pour utiliser parseTextContent
+                const val = _H.getValueFromStrVar(state, vElem, res.key);
+                return _H.replaceAll2(acc, res.match, val);
             }, baseText);
-        },
-        parseAttr(attVal: string, vElem: vElem): string {
-            return parseTextContent(state, vElem, attVal);
         },
         createEventListener(att: any, node: any): void {
             const eventType: string = att.name.replace("-", "").toLowerCase();

@@ -32,6 +32,7 @@ const stringRegexp = /(['])((\\{2})*|(.*?[^\\](\\{2})*))\1/;
 const numberRegexp = /^-?\d+\.?\d*$/;
 const dashRegex = /\-/g;
 const digitRegex = /([0-9]*[.])?[0-9]+/;
+const fnInvRegex = /\b\(.+?\)(?=|$)/g;
 const indexOfRegex = (arr, regex, last = false) => {
     let res;
     for (let u = 0; u < arr.length; u++) {
@@ -53,28 +54,33 @@ const computeNumber = (str) => {
     const number = match[0];
     return matches.length % 2 === 0 ? parseFloat(number) : parseFloat(`-${number}`);
 };
+export const sanitizeVar = (str) => {
+    return _H.replaceAll2(str, ["(", "{", "}", ")", " "], "");
+};
 export const getKeysUsed = (str) => {
     if (!str)
         return [];
-    const isVar = (str) => !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str);
-    const isLoop = (str) => str.includes(IN);
+    const isVar = (str) => {
+        return !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str) && !fnInvRegex.test(str);
+    };
+    const isLoop = (str) => str.includes(IN) && !fnInvRegex.test(str);
     const keys = [];
-    _H.splitTrim(str, fullArRegex).forEach((val) => {
-        if (isLoop(val))
-            keys.push(_H.splitTrim(val, IN).pop() || "");
-        else if (isVar(val))
-            keys.push(val);
-    });
+    if (!fnInvRegex.test(str)) {
+        _H.splitTrim(str, fullArRegex).forEach((val) => {
+            if (isLoop(val))
+                keys.push(sanitizeVar(_H.splitTrim(val, IN).pop() || ""));
+            else if (isVar(val))
+                keys.push(sanitizeVar(val));
+        });
+    }
     return keys;
 };
-export const parseTextContent = (state, vElem, str) => {
-    let newStr = str;
+export const parseTextWithVar = (state, vElem, str) => {
     const matches = [...str.matchAll(_G.TEXT_BIND_REGEXP)];
-    matches.forEach((match) => {
+    return matches.reduce((newStr, match) => {
         const val = _H.getValueFromStrVar(state, vElem, match[1]);
-        newStr = _H.replaceAll(newStr, match[0], val);
-    });
-    return newStr;
+        return _H.replaceAll2(newStr, match[0], val);
+    }, str);
 };
 export default (_state) => {
     return {
@@ -97,16 +103,16 @@ export default (_state) => {
             let split = _H.splitTrim(exp, arOpMatchRegex);
             for (let u = 0; u < split.length; u++) {
                 // first detect and convert state vars -> use this.getPrimFromStrArr()
-                const nakedExp = _H.replaceAll(split[u], NOT, "");
+                const nakedExp = _H.replaceAll2(split[u], NOT, "");
                 let res = split[u];
-                if (isVar(nakedExp) && !globalPrims.includes(_H.replaceAll(split[u], NOT, ""))) {
+                if (isVar(nakedExp) && !globalPrims.includes(_H.replaceAll2(split[u], NOT, ""))) {
                     const varVal = _H.resolvePath(_state, nakedExp);
                     res = ((isBoolified(split[u]) ? !varVal : varVal) || false).toString();
                 }
                 split[u] = res;
                 // second translate strings to js values
-                if (globalPrims.includes(_H.replaceAll(split[u], NOT, ""))) {
-                    const type = globalPrims.find((e) => e === _H.replaceAll(split[u], NOT, ""));
+                if (globalPrims.includes(_H.replaceAll2(split[u], NOT, ""))) {
+                    const type = globalPrims.find((e) => e === _H.replaceAll2(split[u], NOT, ""));
                     switch (type) {
                         case FALSE:
                             split[u] = false;
@@ -130,7 +136,7 @@ export default (_state) => {
                         split[u] = parseFloat(split[u]);
                     }
                     else if (stringRegexp.test(split[u])) {
-                        split[u] = _H.replaceAll(split[u], stringDelimiter, "");
+                        split[u] = _H.replaceAll2(split[u], stringDelimiter, "");
                     }
                 }
             }

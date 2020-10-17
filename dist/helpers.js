@@ -15,8 +15,13 @@ export const setPath = (obj, path, value, separator = _G.OBJECT_SEPARATOR) => {
 export const splitTrim = (string, separator) => {
     return string.split(separator).map((e) => e.trim());
 };
-export const replaceAll = (s, m, r, p) => {
-    return s === p || r.includes(m) ? s : replaceAll(s.replace(m, r), m, r, s);
+// export const replaceAll = (s: string, m: string, r: any, p?: any): string => {
+//     return s === p || r.includes(m) ? s : replaceAll(s.replace(m, r), m, r, s);
+// };
+export const replaceAll2 = (str, match, replacement) => {
+    return [match].flat().reduce((acc, m) => {
+        return acc.split(m).join(replacement);
+    }, str);
 };
 export const findCache = (variable, vElem, returnType = false) => {
     if (!variable)
@@ -46,7 +51,6 @@ export const findCache = (variable, vElem, returnType = false) => {
 };
 export const getValueFromStrVar = (state, vElem, str) => {
     const cachedVal = findCache(str, vElem);
-    console.log(state, str);
     if (cachedVal)
         return cachedVal;
     return resolvePath(state, str);

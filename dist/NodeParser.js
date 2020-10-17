@@ -1,5 +1,5 @@
 import _G from "./_GLOBALS_.js";
-import StringParser, { parseTextContent } from "./StringParser.js";
+import StringParser, { parseTextWithVar } from "./StringParser.js";
 import * as _H from "./helpers.js";
 export default (_this, state) => {
     return {
@@ -12,6 +12,7 @@ export default (_this, state) => {
             if (attributes.length === 0)
                 return node;
             attributes.forEach((att) => {
+                console.log(att);
                 if (att.name && att.name.includes("on-")) {
                     this.createEventListener(att, node);
                 }
@@ -21,7 +22,7 @@ export default (_this, state) => {
                             node.className = this.parseClasses(att.value, node.className);
                             break;
                         default:
-                            node.setAttribute(att.name, this.parseAttr(att.value, vElem));
+                            node.setAttribute(att.name, parseTextWithVar(state, vElem, att.value));
                             break;
                     }
                 }
@@ -42,14 +43,9 @@ export default (_this, state) => {
         },
         parseTextContent(baseText, attributes, vElem) {
             return attributes.reduce((acc, res) => {
-                const cachedVal = _H.findCache(res.key, vElem);
-                if (cachedVal)
-                    return acc.replace(res.match, cachedVal);
-                return acc.replace(res.match, _H.resolvePath(state, res.key));
+                const val = _H.getValueFromStrVar(state, vElem, res.key);
+                return _H.replaceAll2(acc, res.match, val);
             }, baseText);
-        },
-        parseAttr(attVal, vElem) {
-            return parseTextContent(state, vElem, attVal);
         },
         createEventListener(att, node) {
             const eventType = att.name.replace("-", "").toLowerCase();

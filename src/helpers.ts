@@ -19,9 +19,15 @@ export const splitTrim = (string: string, separator: string | RegExp) => {
     return string.split(separator).map((e) => e.trim());
 };
 
-export const replaceAll = (s: string, m: string, r: any, p?: any): string => {
-    return s === p || r.includes(m) ? s : replaceAll(s.replace(m, r), m, r, s);
-};
+// export const replaceAll = (s: string, m: string, r: any, p?: any): string => {
+//     return s === p || r.includes(m) ? s : replaceAll(s.replace(m, r), m, r, s);
+// };
+
+export const replaceAll2 = (str: string, match: string | string[], replacement: string): string => {
+    return [match].flat().reduce((acc, m) => {
+        return acc.split(m).join(replacement);
+    }, str)
+}
 
 export const findCache = (variable: string, vElem: vElem, returnType: boolean = false): any => {
     if (!variable) return null;
@@ -50,7 +56,6 @@ export const findCache = (variable: string, vElem: vElem, returnType: boolean = 
 
 export const getValueFromStrVar = (state: any, vElem: vElem, str: string): any => {
     const cachedVal = findCache(str, vElem);
-    console.log(state, str)
     if (cachedVal) return cachedVal;
     return resolvePath(state, str);
 }

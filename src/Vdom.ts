@@ -41,28 +41,15 @@ export default (_this: any, symbol: Symbol) => {
             return results;
         },
         getAttributes(node: HTMLElement): any[] {
-            const possibleAttrs = [
-                _G.LOOP_BIND,
-                _G.LOOP_ITEM,
-                _G.LOOP_INDEX,
-                _G.IF_BIND,
-                _G.CLASS_BIND,
-                "src",
-                ..._G.EVENTS_ATTR,
-            ];
             const nodeAttrs: any[] = [];
-            possibleAttrs.forEach((attrName) => {
-                if (node.hasAttribute(attrName)) {
-                    const att: string | null = node.getAttribute(attrName);
-                    if (typeof att === "string") {
-                        nodeAttrs.push({
-                            name: attrName,
-                            value: att, // seal just cet prop
-                            keysUsed: getKeysUsed(att.split(":").shift() || ""),
-                        });
-                    }
-                }
-            });
+            for (let u = 0; u < node.attributes.length; u++) {
+                const { value, name } = node.attributes[u];
+                nodeAttrs.push({
+                    name,
+                    value, // seal juste cet prop
+                    keysUsed: getKeysUsed(value.split(":").shift() || ""),
+                });
+            }
             return nodeAttrs;
         },
         classify(attrs: any[]): string {

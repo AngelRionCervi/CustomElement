@@ -35,6 +35,7 @@ const stringRegexp: RegExp = /(['])((\\{2})*|(.*?[^\\](\\{2})*))\1/;
 const numberRegexp: RegExp = /^-?\d+\.?\d*$/;
 const dashRegex: RegExp = /\-/g;
 const digitRegex: RegExp = /([0-9]*[.])?[0-9]+/;
+const fnInvRegex: RegExp = /\b\(.+?\)(?=|$)/g;
 
 const indexOfRegex = (arr: any[], regex: RegExp, last: boolean = false): number | undefined => {
     let res;
@@ -56,27 +57,33 @@ const computeNumber = (str: string): number => {
     return matches.length % 2 === 0 ? parseFloat(number) : parseFloat(`-${number}`);
 };
 
+export const sanitizeVar = (str: string): string => {
+    return _H.replaceAll2(str, ["(", "{", "}", ")", " "], "");
+} 
+
 export const getKeysUsed = (str: string): string[] => {
     if (!str) return [];
-    const isVar = (str: string): boolean => !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str);
-    const isLoop = (str: string): boolean => str.includes(IN);
+    const isVar = (str: string): boolean => {
+        return !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str) && !fnInvRegex.test(str);
+    }
+    const isLoop = (str: string): boolean => str.includes(IN) && !fnInvRegex.test(str);
     const keys: string[] = [];
-    _H.splitTrim(str, fullArRegex).forEach((val: string) => {
-        if (isLoop(val)) keys.push(_H.splitTrim(val, IN).pop() || "");
-        else if (isVar(val)) keys.push(val);
-    });
+    if (!fnInvRegex.test(str)) {
+        _H.splitTrim(str, fullArRegex).forEach((val: string) => {
+            if (isLoop(val)) keys.push(sanitizeVar(_H.splitTrim(val, IN).pop() || ""));
+            else if (isVar(val)) keys.push(sanitizeVar(val));
+        });
+    }
     return keys;
 };
 
-export const parseTextContent = (state: any, vElem: vElem, str: string) : string => {
-    let newStr: string = str;
+export const parseTextWithVar = (state: any, vElem: vElem, str: string): string => {
     const matches: RegExpMatchArray[] = [...str.matchAll(_G.TEXT_BIND_REGEXP)];
-    matches.forEach((match: RegExpMatchArray) => {
+    return matches.reduce((newStr, match) => {
         const val = _H.getValueFromStrVar(state, vElem, match[1]);
-        newStr = _H.replaceAll(newStr, match[0], val);
-    })
-    return newStr;
-}
+        return _H.replaceAll2(newStr, match[0], val);
+    }, str);
+};
 
 export default (_state: any) => {
     return {
@@ -102,16 +109,16 @@ export default (_state: any) => {
 
             for (let u = 0; u < split.length; u++) {
                 // first detect and convert state vars -> use this.getPrimFromStrArr()
-                const nakedExp: string = _H.replaceAll(split[u], NOT, "");
+                const nakedExp: string = _H.replaceAll2(split[u], NOT, "");
                 let res = split[u];
-                if (isVar(nakedExp) && !globalPrims.includes(_H.replaceAll(split[u], NOT, ""))) {
+                if (isVar(nakedExp) && !globalPrims.includes(_H.replaceAll2(split[u], NOT, ""))) {
                     const varVal = _H.resolvePath(_state, nakedExp);
                     res = ((isBoolified(split[u]) ? !varVal : varVal) || false).toString();
                 }
                 split[u] = res;
                 // second translate strings to js values
-                if (globalPrims.includes(_H.replaceAll(split[u], NOT, ""))) {
-                    const type = globalPrims.find((e: string) => e === _H.replaceAll(split[u], NOT, ""));
+                if (globalPrims.includes(_H.replaceAll2(split[u], NOT, ""))) {
+                    const type = globalPrims.find((e: string) => e === _H.replaceAll2(split[u], NOT, ""));
                     switch (type) {
                         case FALSE:
                             split[u] = false;
@@ -133,7 +140,7 @@ export default (_state: any) => {
                     if (numberRegexp.test(split[u])) {
                         split[u] = parseFloat(split[u]);
                     } else if (stringRegexp.test(split[u])) {
-                        split[u] = _H.replaceAll(split[u], stringDelimiter, "");
+                        split[u] = _H.replaceAll2(split[u], stringDelimiter, "");
                     }
                 }
             }
