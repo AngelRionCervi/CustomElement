@@ -2,11 +2,12 @@ import { createComp } from "./dist/EZC.js";
 import gState from "./state.js";
 
 createComp("simple-counter", ({ createState }) => {
-    createState({ count: 0 });
+    createState({ count: 0 , bgSrc:"https://www.esa.int/var/esa/storage/images/19716864-11-eng-GB/ESA_root_pillars.jpg"});
 
     return /* html */ `
         <p>{{count}}</p>
         <button on-click="setState('count', count + 1)">add</button>
+        <img src="{{ bgSrc }}">
     `;
 });
 

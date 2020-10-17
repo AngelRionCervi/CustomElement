@@ -47,6 +47,7 @@ export default (_this: any, symbol: Symbol) => {
                 _G.LOOP_INDEX,
                 _G.IF_BIND,
                 _G.CLASS_BIND,
+                "src",
                 ..._G.EVENTS_ATTR,
             ];
             const nodeAttrs: any[] = [];
@@ -56,7 +57,7 @@ export default (_this: any, symbol: Symbol) => {
                     if (typeof att === "string") {
                         nodeAttrs.push({
                             name: attrName,
-                            value: att,
+                            value: att, // seal just cet prop
                             keysUsed: getKeysUsed(att.split(":").shift() || ""),
                         });
                     }

@@ -11,7 +11,7 @@ store.createGlobalState({
 });
 
 const increaseALot = () => {
-    store.setGlobal("count", store.getGlobal("count") + 500);
+    store.setGlobal("count", store.getGlobal("count") + 1);
 };
 
 store.setGlobal("increaseALot", increaseALot);

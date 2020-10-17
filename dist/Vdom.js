@@ -47,6 +47,7 @@ export default (_this, symbol) => {
                 _G.LOOP_INDEX,
                 _G.IF_BIND,
                 _G.CLASS_BIND,
+                "src",
                 ..._G.EVENTS_ATTR,
             ];
             const nodeAttrs = [];

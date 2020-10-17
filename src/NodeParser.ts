@@ -8,6 +8,7 @@ export default (_this: any, state: any) => {
             const { attributes, node, cache, type } = vElem;
             if (type === "text" && cache.hasOwnProperty("baseText")) {
                 node.textContent = this.parseTextContent(cache.baseText, attributes, vElem);
+                return;
             }
             if (attributes.length === 0) return node;
             attributes.forEach((att) => {
@@ -17,6 +18,9 @@ export default (_this: any, state: any) => {
                     switch (att.name) {
                         case _G.CLASS_BIND:
                             node.className = this.parseClasses(att.value, node.className);
+                            break;
+                        default:
+                            node.setAttribute(att.name, this.parseAttr(att.value, vElem));
                             break;
                     }
                 }
@@ -43,6 +47,18 @@ export default (_this: any, state: any) => {
                 if (cachedVal) return acc.replace(res.match, cachedVal);
                 return acc.replace(res.match, _H.resolvePath(state, res.key));
             }, baseText);
+        },
+        parseAttr(attVal: string, vElem: vElem): string {
+            let newVal = attVal;
+            const matches = [...attVal.matchAll(_G.TEXT_BIND_REGEXP)];
+            matches.forEach((match) => {
+                const cachedVal = _H.findCache(match[1], vElem);
+                if (cachedVal) newVal = newVal.replace(match[0], cachedVal);
+                else {
+                    newVal = newVal.replace(match[0], _H.resolvePath(state, match[1])); // use _H.replaceAll
+                }
+            });
+            return newVal;
         },
         createEventListener(att: any, node: any): void {
             const eventType: string = att.name.replace("-", "").toLowerCase();
