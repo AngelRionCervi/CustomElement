@@ -12,7 +12,6 @@ export default (_this: any, state: any) => {
             }
             if (attributes.length === 0) return node;
             attributes.forEach((att) => {
-                console.log(att)
                 if (att.name && att.name.includes("on-")) {
                     this.createEventListener(att, node);
                 } else {
@@ -59,7 +58,7 @@ export default (_this: any, state: any) => {
                         args = StringParser(state).getPrimFromSplit(_H.splitTrim(argsB[1], _G.PARAM_DELIMITER));
                         fnName = cb.split(_G.LOOP_BRACE_REGEXP).shift();
                     }
-                    const fn = _H.resolvePath(_this, fnName);
+                    const fn = _H.resolvePath(_this, fnName) || _H.resolvePath(state, fnName) || null;
                     if (fn) {
                         fn(...args);
                         return;

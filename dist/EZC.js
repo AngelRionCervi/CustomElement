@@ -19,7 +19,7 @@ export function createComp(name, defineComp) {
                 };
                 return { state: store.__get(this.storeSymbol), setState: this.setState };
             };
-            const registerFn = (fns) => {
+            const register = (fns) => {
                 Object.entries(fns).forEach(([name, fn]) => {
                     // @ts-ignore :)
                     this[name] = fn;
@@ -42,7 +42,7 @@ export function createComp(name, defineComp) {
                 store.addSymbolToKey(key, this.storeSymbol);
                 return store.getGlobal()[key].val;
             };
-            const html = defineComp({ createState, registerFn, cycle, useGlobal });
+            const html = defineComp({ createState, register, cycle, useGlobal });
             const shadowRoot = this.attachShadow({ mode: "open" });
             shadowRoot.innerHTML = html;
             this.props = {};

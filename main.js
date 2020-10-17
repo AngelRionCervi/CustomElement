@@ -1,8 +1,17 @@
 import { createComp } from "./dist/EZC.js";
 import gState from "./state.js";
 
-createComp("simple-counter", ({ createState }) => {
-    createState({ count: 0 , bgSrc:"https://www.esa.int/var/esa/storage/images/19716864-11-eng-GB/ESA_root_pillars.jpg"});
+createComp("simple-counter", ({ createState, register }) => {
+    const { setState } = createState({
+        count: 0,
+        bgSrc: "https://i0.wp.com/www.wushujia.fr/wp-content/uploads/2016/03/js-logo.png?ssl=1",
+    });
+    
+    register({
+        addImage() {
+            console.log("hey")
+        }
+    })
 
     return /* html */ `
         <p>{{count}}</p>
@@ -11,18 +20,21 @@ createComp("simple-counter", ({ createState }) => {
     `;
 });
 
-createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
+createComp("t-comp", ({ createState, register, useGlobal, cycle }) => {
     const initState = {
         count: useGlobal("count"),
         name: "hola",
         fruits: [{ name: "melon" }, "berry"],
         ties: [{ color: "blue" }, { color: "red" }],
+        increaseGlobal() {
+            gState.increaseALot();
+        },
     };
     const { state, setState } = createState(initState);
 
     setState("ties", [...state.ties, "green"]);
 
-    registerFn({
+    register({
         addGlobalThree() {
             gState.increaseALot();
         },
@@ -34,6 +46,11 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
         },
         eventTest2(t, s, w) {
             console.log(t, s, w);
+        },
+        moreStuff: {
+            that(whattolog, whattolog2) {
+                console.log(whattolog, whattolog2);
+            },
         },
     });
 
@@ -58,7 +75,7 @@ createComp("t-comp", ({ createState, registerFn, useGlobal, cycle }) => {
                 font-size: 4em;
             }
         </style>
-        <button on-click="addGlobalThree ~ addNew">add</button> <span> {{count}} {{name}} </span> 
+        <button on-click="increaseGlobal ~ addNew ~ moreStuff.that('yes', 3)">add</button> <span> {{count}} {{name}} </span> 
         <div on-mouseover="eventStuff ~ eventTest2(3, 'hey', two)" class="text-big" class-bind="count > 3 : color-red ~ untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
             <div loop="($item, $inde) in fruits">

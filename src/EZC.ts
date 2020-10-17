@@ -33,7 +33,7 @@ export function createComp(name: string, defineComp: Function) {
                     return { state: store.__get(this.storeSymbol), setState: this.setState };
                 };
 
-                const registerFn = (fns: registerFn[]) => {
+                const register = (fns: register[]) => {
                     Object.entries(fns).forEach(([name, fn]) => {
                         // @ts-ignore :)
                         this[name] = fn;
@@ -60,7 +60,7 @@ export function createComp(name: string, defineComp: Function) {
                     return store.getGlobal()[key].val;
                 };
 
-                const html = defineComp({ createState, registerFn, cycle, useGlobal });
+                const html = defineComp({ createState, register, cycle, useGlobal });
 
                 const shadowRoot = this.attachShadow({ mode: "open" });
                 shadowRoot.innerHTML = html;

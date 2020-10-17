@@ -45,7 +45,7 @@ interface nodeInfo {
     key: any,
 }
 
-interface registerFn {
+interface register {
     name: string,
     fn: Function,
 }
