@@ -1,4 +1,5 @@
 import * as _H from "./helpers.js";
+import _G from "./_GLOBALS_.js";
 const AND = "&&";
 const OR = "||";
 const EQUAL = "===";
@@ -65,6 +66,15 @@ export const getKeysUsed = (str) => {
             keys.push(val);
     });
     return keys;
+};
+export const parseTextContent = (state, vElem, str) => {
+    let newStr = str;
+    const matches = [...str.matchAll(_G.TEXT_BIND_REGEXP)];
+    matches.forEach((match) => {
+        const val = _H.getValueFromStrVar(state, vElem, match[1]);
+        newStr = _H.replaceAll(newStr, match[0], val);
+    });
+    return newStr;
 };
 export default (_state) => {
     return {

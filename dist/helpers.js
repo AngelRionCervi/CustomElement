@@ -44,3 +44,10 @@ export const findCache = (variable, vElem, returnType = false) => {
     }
     return null;
 };
+export const getValueFromStrVar = (state, vElem, str) => {
+    const cachedVal = findCache(str, vElem);
+    console.log(state, str);
+    if (cachedVal)
+        return cachedVal;
+    return resolvePath(state, str);
+};

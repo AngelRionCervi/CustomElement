@@ -1,5 +1,5 @@
 import _G from "./_GLOBALS_.js";
-import StringParser from "./StringParser.js";
+import StringParser, { parseTextContent } from "./StringParser.js";
 import * as _H from "./helpers.js";
 export default (_this, state) => {
     return {
@@ -49,17 +49,7 @@ export default (_this, state) => {
             }, baseText);
         },
         parseAttr(attVal, vElem) {
-            let newVal = attVal;
-            const matches = [...attVal.matchAll(_G.TEXT_BIND_REGEXP)];
-            matches.forEach((match) => {
-                const cachedVal = _H.findCache(match[1], vElem);
-                if (cachedVal)
-                    newVal = newVal.replace(match[0], cachedVal);
-                else {
-                    newVal = newVal.replace(match[0], _H.resolvePath(state, match[1])); // use _H.replaceAll
-                }
-            });
-            return newVal;
+            return parseTextContent(state, vElem, attVal);
         },
         createEventListener(att, node) {
             const eventType = att.name.replace("-", "").toLowerCase();
