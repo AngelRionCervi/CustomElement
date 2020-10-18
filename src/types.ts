@@ -43,6 +43,7 @@ interface nodeInfo {
     type: string,
     variableName: any,
     indexName: any,
+    numIndexName: any,
     key: any,
 }
 

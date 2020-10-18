@@ -82,7 +82,7 @@ export const parseTextWithVar = (state, vElem, str) => {
         return _H.replaceAll2(newStr, match[0], val);
     }, str);
 };
-export default (_state) => {
+export default (_state, vElem) => {
     return {
         getPrimFromSplit(split) {
             return split.reduce((acc, str) => {
@@ -106,7 +106,8 @@ export default (_state) => {
                 const nakedExp = _H.replaceAll2(split[u], NOT, "");
                 let res = split[u];
                 if (isVar(nakedExp) && !globalPrims.includes(_H.replaceAll2(split[u], NOT, ""))) {
-                    const varVal = _H.resolvePath(_state, nakedExp);
+                    const varVal = _H.getValueFromStrVar(_state, vElem, nakedExp);
+                    //const varVal = _H.resolvePath(_state, nakedExp);
                     res = ((isBoolified(split[u]) ? !varVal : varVal) || false).toString();
                 }
                 split[u] = res;

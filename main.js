@@ -25,8 +25,8 @@ createComp("t-comp", ({ createState, register, useGlobal, cycle }) => {
     const initState = {
         count: useGlobal("count"),
         name: "hola",
-        fruits: [{ name: "melon" }, "berry"],
-        ties: [{ color: "blue" }, { color: "red" }],
+        fruits: [{ name: "melon" }, {name: "berry"}],
+        ties: ["blue", "red"],
         increaseGlobal() {
             gState.increaseALot();
         },
@@ -75,15 +75,18 @@ createComp("t-comp", ({ createState, register, useGlobal, cycle }) => {
             .text-big {
                 font-size: 4em;
             }
+            .display-none {
+                display: none;
+            }
         </style>
         <button on-click="increaseGlobal ~ addNew ~ moreStuff.that('yes', 3)">add</button> <span> {{count}} {{name}} </span> 
         <div on-mouseover="eventStuff ~ eventTest2(3, 'hey', two)" class="text-big" class-bind="count > 3 : color-red ~ untrue: underline">this should NOT be red</div>
         <div class="just-a-container">
-            <div loop="($item, $inde) in fruits">
-                <p>hey boyyyyy {{$item.name}} {{count}}</p>
+            <div loop="($item, $inde, $ii) in fruits">
+                <p>hey boyyyyy {{$item.name}} {{count}} {{ $ii }}</p>
                 <div loop="($ite, $index) in ties">
-                    <br>hh {{$ite.color}} {{$index}} {{$ite}}
-                    <div if="$ite.color === 'blue'">HIIIIIIIIIIIIII</div>
+                    <br>hh {{$ite}} {{$index}} {{$ite}}
+                    <div if="$ite === 'blue'" class-bind="$ite !== 'blue' : display-none">HIIIIIIIIIIIIII</div>
                 </div>
                 <div loop-index="$inde"></div>
             </div>

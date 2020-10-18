@@ -22,15 +22,22 @@ export default (_this: any, symbol: symbol) => {
         },
         getNodeInfo(node: HTMLElement): nodeInfo {
             if (node.nodeType === 3) {
-                return { attributes: this.getTextBind(node), type: "text", variableName: null, indexName: null, key: null };
+                return {
+                    attributes: this.getTextBind(node),
+                    type: "text",
+                    variableName: null,
+                    indexName: null,
+                    numIndexName: null,
+                    key: null,
+                };
             }
             const attributes: any[] = this.getAttributes(node);
             const type: string = this.classify(attributes);
-            const [variableName, indexName, key] = this.getKeyAndCondition(type, attributes);
+            const [variableName, indexName, numIndexName, key] = this.getKeyAndCondition(type, attributes);
             if (type === "loop" && ((variableName && variableName[0] !== "$") || (indexName && indexName[0] !== "$"))) {
                 throw new Error("Declared loop variables must start with '$'.");
             }
-            return { attributes, type, variableName, indexName, key };
+            return { attributes, type, variableName, indexName, numIndexName, key };
         },
         getTextBind(node: HTMLElement): any[] | null {
             if (!node.textContent) return null;
@@ -62,24 +69,28 @@ export default (_this: any, symbol: symbol) => {
                 return "vanilla";
             }
         },
-        parseLoopAttr(attrVal: string): [string, string | undefined, string] {
-            let [variable, key] = _H.splitTrim(attrVal, _G.LOOP_IN_REGEX);
-            let index;
-            const match = variable.match(_G.LOOP_BRACE_REGEXP);
+        parseLoopAttr(attrVal: string): [string, string | undefined, string | undefined, string] {
+            let [variableName, key] = _H.splitTrim(attrVal, _G.LOOP_IN_REGEX);
+            let indexName;
+            let numIndexName;
+            const match = variableName.match(_G.LOOP_BRACE_REGEXP);
             if (match) {
-                const [varr, i] = _H.splitTrim(match[1], _G.PARAM_DELIMITER);
-                variable = varr;
-                index = i;
+                const [varName, iName, numName] = _H.splitTrim(match[1], _G.PARAM_DELIMITER);
+                variableName = varName;
+                indexName = iName;
+                numIndexName = numName;
             }
-            return [variable, index, key];
+            console.log("KEYKEY", key);
+            return [variableName, indexName, numIndexName, key];
         },
-        getKeyAndCondition(type: string, attrs: any[]): [any, any, any] {
+        getKeyAndCondition(type: string, attrs: any[]): [any, any, string | undefined, any] {
             const attrVal = attrs.find((a) => a.name === type);
             if (attrVal) {
-                let [variableName, indexName, key] = [true, attrVal.value, 0] as [any, any, any];
+                let [variableName, indexName, numIndexName, key] = [true, attrVal.value, 0, 0] as [any, any, any, any];
                 switch (type) {
                     case "loop": {
-                        [variableName, indexName, key] = this.parseLoopAttr(attrVal.value);
+                        [variableName, indexName, numIndexName, key] = this.parseLoopAttr(attrVal.value);
+                        console.log("KEYKEY AT END", variableName, indexName, numIndexName, key);
                         break;
                     }
                     case "if": {
@@ -88,18 +99,18 @@ export default (_this: any, symbol: symbol) => {
                         break;
                     }
                 }
-                return [variableName, indexName, key];
+                return [variableName, indexName, numIndexName, key];
             }
-            return [true, 0, undefined];
+            return [true, 0, undefined, undefined];
         },
         createVelem(node: HTMLElement, parent: vElem, cache: any): vElem {
-            const { attributes, type, variableName, indexName, key } = this.getNodeInfo(node);
+            const { attributes, type, variableName, indexName, numIndexName, key } = this.getNodeInfo(node);
             const vElem = {
                 attributes,
                 updateKeys: (attributes || []).map((at) => at.keysUsed).flat(),
                 tag: node.tagName,
                 type,
-                options: { variableName, key, indexName },
+                options: { variableName, key, indexName, numIndexName },
                 cache,
                 node,
                 baseHTML: node.innerHTML,
@@ -110,7 +121,7 @@ export default (_this: any, symbol: symbol) => {
 
             switch (type) {
                 case "loop": {
-                    this.buildLoopChildren(vElem, key, indexName, variableName);
+                    this.buildLoopChildren(vElem, key, indexName, variableName, numIndexName);
                     break;
                 }
                 case "if": {
@@ -132,24 +143,46 @@ export default (_this: any, symbol: symbol) => {
             NodeParser(_this, store.__get(symbol)).parse(vElem);
             return vElem;
         },
-        buildLoopChildren(vElem: vElem, key: any, index: any, variable: string | null) {
-            console.log("loop", key, index, variable);
+        buildLoopChildren(
+            vElem: vElem,
+            key: any,
+            indexName: any,
+            variableName: string | null,
+            numIndexName: string | null
+        ) {
             if (key.includes(_G.RANGE_LOOP_DOTS)) {
-                const [start, finish] = _H.splitTrim(key, _G.RANGE_LOOP_DOTS).map((n: string) => parseInt(n)) as [number, number];
+                const [start, finish] = _H.splitTrim(key, _G.RANGE_LOOP_DOTS).map((n: string) => parseInt(n)) as [
+                    number,
+                    number
+                ];
                 for (let u = start; u < finish + 1; u++) {
                     vElem.children = [
                         ...vElem.children,
-                        ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value: u.toString(), key, variable, index, i: u - start }),
+                        ...this.buildVdom(vElem.node.cloneNode(true), vElem, {
+                            value: u.toString(),
+                            key,
+                            index: (u - start).toString(),
+                            variableName,
+                            indexName,
+                            numIndexName,
+                        }),
                     ];
                 }
                 vElem.node.innerHTML = "";
                 return;
             }
             const objToLoop = _H.resolvePath(store.__get(symbol), key);
-            Object.entries(objToLoop).forEach(([key, value], i) => {
+            Object.entries(objToLoop).forEach(([key, value], index) => {
                 vElem.children = [
                     ...vElem.children,
-                    ...this.buildVdom(vElem.node.cloneNode(true), vElem, { value, key, variable, index, i }),
+                    ...this.buildVdom(vElem.node.cloneNode(true), vElem, {
+                        value,
+                        key,
+                        index: index.toString(),
+                        variableName,
+                        indexName,
+                        numIndexName,
+                    }),
                 ];
             });
             vElem.node.innerHTML = "";
@@ -165,7 +198,7 @@ export default (_this: any, symbol: symbol) => {
                     key = key.replace(m[0], cachedVal);
                 }
             });
-            const condition = StringParser(store.__get(symbol)).parse(key);
+            const condition = StringParser(store.__get(symbol), vElem).parse(key);
             vElem.children = [...vElem.children, ...this.buildVdom(vElem.node, vElem, { display: condition })];
             vElem.options.key = key;
             vElem.condition = condition;
@@ -236,10 +269,10 @@ export default (_this: any, symbol: symbol) => {
                 if (corVelem[u]?.cache?.display === false) continue;
                 const loopItems = this.getAllChildrenFlat(corVelem[u].children);
                 loopItems.forEach((loopItem: vElem) => {
-                    const parentLoop = this.findParentLoopBody(loopItem);
-                    if (parentLoop) {
-                        loopItem.node.innerHTML = parentLoop.vElem.cache[parentLoop.type];
-                    }
+                    // const parentLoop = this.findParentLoopBody(loopItem);
+                    // if (parentLoop) {
+                    //     loopItem.node.innerHTML = parentLoop.vElem.cache[parentLoop.type];
+                    // }
                     loopItem.parent.node.appendChild(loopItem.node);
                 });
                 const concernedIfs = this.getVChildren("if", null, corVelem[u].children);
@@ -265,8 +298,8 @@ export default (_this: any, symbol: symbol) => {
         rebuildLoop(loopVnode: vElem, key: string): vElem {
             loopVnode.children = [];
             loopVnode.node.innerHTML = loopVnode.baseHTML;
-            const { variableName, indexName } = this.getNodeInfo(loopVnode.node);
-            this.buildLoopChildren(loopVnode, key, indexName, variableName);
+            const { variableName, indexName, numIndexName } = this.getNodeInfo(loopVnode.node);
+            this.buildLoopChildren(loopVnode, key, indexName, variableName, numIndexName);
             return loopVnode;
         },
         rebuildIf(ifVnode: vElem): vElem {
