@@ -41,8 +41,8 @@ interface vElem {
 interface nodeInfo {
     attributes: any[] | null,
     type: string,
-    variable: any,
-    index: any,
+    variableName: any,
+    indexName: any,
     key: any,
 }
 

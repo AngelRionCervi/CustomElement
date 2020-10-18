@@ -4,7 +4,7 @@ import StringParser, { getKeysUsed } from "./StringParser.js";
 import NodeParser from "./NodeParser.js";
 import store from "./Store.js";
 
-export default (_this: any, symbol: Symbol) => {
+export default (_this: any, symbol: symbol) => {
     let tree: any = null;
     const indexOfEl = (element: HTMLElement): number => {
         if (element && element.parentNode) {
@@ -22,15 +22,15 @@ export default (_this: any, symbol: Symbol) => {
         },
         getNodeInfo(node: HTMLElement): nodeInfo {
             if (node.nodeType === 3) {
-                return { attributes: this.getTextBind(node), type: "text", variable: null, index: null, key: null };
+                return { attributes: this.getTextBind(node), type: "text", variableName: null, indexName: null, key: null };
             }
             const attributes: any[] = this.getAttributes(node);
             const type: string = this.classify(attributes);
-            const [variable, index, key] = this.getKeyAndCondition(type, attributes);
-            if (type === "loop" && ((variable && variable[0] !== "$") || (index && index[0] !== "$"))) {
+            const [variableName, indexName, key] = this.getKeyAndCondition(type, attributes);
+            if (type === "loop" && ((variableName && variableName[0] !== "$") || (indexName && indexName[0] !== "$"))) {
                 throw new Error("Declared loop variables must start with '$'.");
             }
-            return { attributes, type, variable, index, key };
+            return { attributes, type, variableName, indexName, key };
         },
         getTextBind(node: HTMLElement): any[] | null {
             if (!node.textContent) return null;
@@ -76,30 +76,30 @@ export default (_this: any, symbol: Symbol) => {
         getKeyAndCondition(type: string, attrs: any[]): [any, any, any] {
             const attrVal = attrs.find((a) => a.name === type);
             if (attrVal) {
-                let [variable, index, key] = [true, attrVal.value, 0] as [any, any, any];
+                let [variableName, indexName, key] = [true, attrVal.value, 0] as [any, any, any];
                 switch (type) {
                     case "loop": {
-                        [variable, index, key] = this.parseLoopAttr(attrVal.value);
+                        [variableName, indexName, key] = this.parseLoopAttr(attrVal.value);
                         break;
                     }
                     case "if": {
                         key = attrVal.value;
-                        index = null;
+                        indexName = null;
                         break;
                     }
                 }
-                return [variable, index, key];
+                return [variableName, indexName, key];
             }
             return [true, 0, undefined];
         },
         createVelem(node: HTMLElement, parent: vElem, cache: any): vElem {
-            const { attributes, type, variable, index, key } = this.getNodeInfo(node);
+            const { attributes, type, variableName, indexName, key } = this.getNodeInfo(node);
             const vElem = {
                 attributes,
                 updateKeys: (attributes || []).map((at) => at.keysUsed).flat(),
                 tag: node.tagName,
                 type,
-                options: { variable, key, index },
+                options: { variableName, key, indexName },
                 cache,
                 node,
                 baseHTML: node.innerHTML,
@@ -110,7 +110,7 @@ export default (_this: any, symbol: Symbol) => {
 
             switch (type) {
                 case "loop": {
-                    this.buildLoopChildren(vElem, key, index, variable);
+                    this.buildLoopChildren(vElem, key, indexName, variableName);
                     break;
                 }
                 case "if": {
@@ -265,8 +265,8 @@ export default (_this: any, symbol: Symbol) => {
         rebuildLoop(loopVnode: vElem, key: string): vElem {
             loopVnode.children = [];
             loopVnode.node.innerHTML = loopVnode.baseHTML;
-            const { variable, index } = this.getNodeInfo(loopVnode.node);
-            this.buildLoopChildren(loopVnode, key, index, variable);
+            const { variableName, indexName } = this.getNodeInfo(loopVnode.node);
+            this.buildLoopChildren(loopVnode, key, indexName, variableName);
             return loopVnode;
         },
         rebuildIf(ifVnode: vElem): vElem {
@@ -278,14 +278,14 @@ export default (_this: any, symbol: Symbol) => {
         update(key: string, val: any): void {
             _H.setPath(store.__get(symbol), key, val);
             const loopsToRerender: vElem[] = this.getVChildren("loop", key);
-            loopsToRerender.forEach((loop) => {
-                loop = this.rebuildLoop(loop, key);
+            loopsToRerender.forEach((loopBlock) => {
+                loopBlock = this.rebuildLoop(loopBlock, key);
             });
             this.renderLoops(loopsToRerender);
 
             const ifsToRerender: vElem[] = this.getVChildren("if", key);
-            ifsToRerender.forEach((iff) => {
-                iff = this.rebuildIf(iff);
+            ifsToRerender.forEach((ifBlock) => {
+                ifBlock = this.rebuildIf(ifBlock);
             });
             this.renderIfs(ifsToRerender);
 
