@@ -21,6 +21,7 @@ interface options {
     OBJECT_SEPARATOR: string;
     LOOP_VAR_REGEX: RegExp;
     RANGE_LOOP_DOTS: string;
+    ARRAY_INDEX_REGEXP: RegExp;
 }
 
 interface vElem {

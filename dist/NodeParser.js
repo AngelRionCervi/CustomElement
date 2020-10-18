@@ -42,7 +42,9 @@ export default (_this, state) => {
         },
         parseTextContent(baseText, attributes, vElem) {
             return attributes.reduce((acc, res) => {
-                const val = _H.getValueFromStrVar(state, vElem, res.key);
+                // refactor pour utiliser parseTextContent
+                const val = _H.getValueFromStrVar(state, vElem, parseTextWithVar(state, vElem, res.key));
+                console.log("ffff", parseTextWithVar(state, vElem, res.key));
                 return _H.replaceAll2(acc, res.match, val);
             }, baseText);
         },

@@ -42,6 +42,7 @@ const options = {
     TEXT_BIND_REGEXP: /\{{([^\}\}]+)+\}}/g,
     IF_SCOPE_REGEXP: /(?=\()(?=((?:(?=.*?\((?!.*?\2)(.*\)(?!.*\3).*))(?=.*?\)(?!.*?\3)(.*)).)+?.*?(?=\2)[^(]*(?=\3$)))/g,
     LOOP_BRACE_REGEXP: /\(([^)]+)\)/,
+    ARRAY_INDEX_REGEXP: /\[([^\}\]]+)+\]/g,
     LOOP_IN_REGEX: /in(?!.*in)/,
     PARAM_DELIMITER: ",",
     EXP_DELIMITER: "~",

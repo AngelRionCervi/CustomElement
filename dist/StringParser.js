@@ -76,9 +76,12 @@ export const getKeysUsed = (str) => {
     return keys;
 };
 export const parseTextWithVar = (state, vElem, str) => {
-    const matches = [...str.matchAll(_G.TEXT_BIND_REGEXP)];
+    const matches = [...str.matchAll(_G.ARRAY_INDEX_REGEXP), ...str.matchAll(_G.TEXT_BIND_REGEXP)];
     return matches.reduce((newStr, match) => {
         const val = _H.getValueFromStrVar(state, vElem, match[1]);
+        if (match[0].charAt(0) === "[" && match[0].charAt(match[0].length - 1) === "]") {
+            return _H.replaceAll2(newStr, match[1], val);
+        }
         return _H.replaceAll2(newStr, match[0], val);
     }, str);
 };

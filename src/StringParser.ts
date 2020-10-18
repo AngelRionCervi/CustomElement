@@ -59,13 +59,13 @@ const computeNumber = (str: string): number => {
 
 export const sanitizeVar = (str: string): string => {
     return _H.replaceAll2(str, ["(", "{", "}", ")", " "], "");
-} 
+};
 
 export const getKeysUsed = (str: string): string[] => {
     if (!str) return [];
     const isVar = (str: string): boolean => {
         return !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str) && !fnInvRegex.test(str);
-    }
+    };
     const isLoop = (str: string): boolean => str.includes(IN) && !fnInvRegex.test(str);
     const keys: string[] = [];
     if (!fnInvRegex.test(str)) {
@@ -78,9 +78,12 @@ export const getKeysUsed = (str: string): string[] => {
 };
 
 export const parseTextWithVar = (state: any, vElem: vElem, str: string): string => {
-    const matches: RegExpMatchArray[] = [...str.matchAll(_G.TEXT_BIND_REGEXP)];
-    return matches.reduce((newStr, match) => {
+    const matches: RegExpMatchArray[] = [...str.matchAll(_G.ARRAY_INDEX_REGEXP), ...str.matchAll(_G.TEXT_BIND_REGEXP)];
+    return matches.reduce((newStr: string, match: RegExpMatchArray) => {
         const val = _H.getValueFromStrVar(state, vElem, match[1]);
+        if (match[0].charAt(0) === "[" && match[0].charAt(match[0].length - 1) === "]") {
+            return _H.replaceAll2(newStr, match[1], val);
+        }
         return _H.replaceAll2(newStr, match[0], val);
     }, str);
 };

@@ -1,5 +1,5 @@
 import _G from "./_GLOBALS_.js";
-import StringParser, { parseTextWithVar} from "./StringParser.js";
+import StringParser, { parseTextWithVar } from "./StringParser.js";
 import * as _H from "./helpers.js";
 
 export default (_this: any, state: any) => {
@@ -42,8 +42,11 @@ export default (_this: any, state: any) => {
             );
         },
         parseTextContent(baseText: string, attributes: any[], vElem: vElem): string {
-            return attributes.reduce((acc, res) => { // refactor pour utiliser parseTextContent
-                const val = _H.getValueFromStrVar(state, vElem, res.key);
+            
+            return attributes.reduce((acc, res) => {
+                // refactor pour utiliser parseTextContent
+                const val = _H.getValueFromStrVar(state, vElem, parseTextWithVar(state, vElem, res.key));
+                console.log("ffff", parseTextWithVar(state, vElem, res.key))
                 return _H.replaceAll2(acc, res.match, val);
             }, baseText);
         },

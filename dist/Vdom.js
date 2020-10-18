@@ -41,7 +41,7 @@ export default (_this, symbol) => {
         getTextBind(node) {
             if (!node.textContent)
                 return null;
-            const matches = [...node.textContent.matchAll(_G.TEXT_BIND_REGEXP)];
+            const matches = [...node.textContent.matchAll(_G.TEXT_BIND_REGEXP), ...node.textContent.matchAll(_G.ARRAY_INDEX_REGEXP)];
             const results = matches.reduce((acc, match) => {
                 return [...acc, { match: match[0], key: match[1].trim(), keysUsed: [match[1].trim()] }];
             }, []);
@@ -82,7 +82,6 @@ export default (_this, symbol) => {
                 indexName = iName;
                 numIndexName = numName;
             }
-            console.log("KEYKEY", key);
             return [variableName, indexName, numIndexName, key];
         },
         getKeyAndCondition(type, attrs) {
@@ -92,7 +91,6 @@ export default (_this, symbol) => {
                 switch (type) {
                     case "loop": {
                         [variableName, indexName, numIndexName, key] = this.parseLoopAttr(attrVal.value);
-                        console.log("KEYKEY AT END", variableName, indexName, numIndexName, key);
                         break;
                     }
                     case "if": {

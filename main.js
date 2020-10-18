@@ -5,6 +5,7 @@ createComp("simple-counter", ({ createState, register }) => {
     const { setState } = createState({
         count: 0,
         bgSrc: "https://i0.wp.com/www.wushujia.fr/wp-content/uploads/2016/03/js-logo.png?ssl=1",
+        images: ["https://i0.wp.com/www.wushujia.fr/wp-content/uploads/2016/03/js-logo.png?ssl=1"]
     });
     
     register({
@@ -17,7 +18,7 @@ createComp("simple-counter", ({ createState, register }) => {
         <p>{{count}}</p>
         <button on-click="setState('count', count + 1)">add</button>
         <img src="{{ bgSrc }}">
-        <div loop="$n in 0..10"> {{ $n }} </div>
+        <div loop="$n in 0..10"> {{ images[$n] }} </div>
     `;
 });
 

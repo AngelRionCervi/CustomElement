@@ -41,7 +41,7 @@ export default (_this: any, symbol: symbol) => {
         },
         getTextBind(node: HTMLElement): any[] | null {
             if (!node.textContent) return null;
-            const matches = [...node.textContent.matchAll(_G.TEXT_BIND_REGEXP)];
+            const matches = [...node.textContent.matchAll(_G.TEXT_BIND_REGEXP), ...node.textContent.matchAll(_G.ARRAY_INDEX_REGEXP)];
             const results = matches.reduce((acc: any[], match: RegExpMatchArray) => {
                 return [...acc, { match: match[0], key: match[1].trim(), keysUsed: [match[1].trim()] }];
             }, []);
@@ -80,7 +80,6 @@ export default (_this: any, symbol: symbol) => {
                 indexName = iName;
                 numIndexName = numName;
             }
-            console.log("KEYKEY", key);
             return [variableName, indexName, numIndexName, key];
         },
         getKeyAndCondition(type: string, attrs: any[]): [any, any, string | undefined, any] {
@@ -90,7 +89,6 @@ export default (_this: any, symbol: symbol) => {
                 switch (type) {
                     case "loop": {
                         [variableName, indexName, numIndexName, key] = this.parseLoopAttr(attrVal.value);
-                        console.log("KEYKEY AT END", variableName, indexName, numIndexName, key);
                         break;
                     }
                     case "if": {

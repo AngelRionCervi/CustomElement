@@ -1,17 +1,96 @@
 import _G from "./_GLOBALS_.js";
-export const resolvePath = (obj, path, separator = _G.OBJECT_SEPARATOR) => {
-    return path
-        .trim()
-        .split(separator)
-        .reduce((prev, curr) => prev && prev[curr], obj);
-};
-export const setPath = (obj, path, value, separator = _G.OBJECT_SEPARATOR) => {
-    path.trim()
-        .split(separator)
-        .reduce((o, p, i) => {
-        return (o[p] = path.trim().split(separator).length === ++i ? value : o[p] || {});
-    }, obj);
-};
+// export const resolvePath = (obj: any, path: string, separator: string = _G.OBJECT_SEPARATOR): any => {
+//     return path
+//         .trim()
+//         .split(separator)
+//         .reduce((prev, curr) => prev && prev[curr], obj);
+// };
+// export const setPath = (obj: any, path: string, value: any, separator: string = _G.OBJECT_SEPARATOR): void => {
+//     path.trim()
+//         .split(separator)
+//         .reduce((o, p, i) => {
+//             return (o[p] = path.trim().split(separator).length === ++i ? value : o[p] || {});
+//         }, obj);
+// };
+export function resolvePath(obj, keyString) {
+    // allow for arrays, returns undefined for non-existant-fields.
+    keyString = keyString.trim();
+    //console.log(obj, keyString)
+    var keys = [{ label: "", type: "field", is_array: false }], current_key = 0;
+    for (var i = 0; i < keyString.length; i++) {
+        var c = keyString.charAt(i);
+        switch (c) {
+            case ".":
+                current_key++;
+                keys[current_key] = { label: "", type: "field", is_array: false };
+                break;
+            case "[":
+                keys[current_key].is_array = true;
+                current_key++;
+                keys[current_key] = { label: "", type: "index", is_array: false };
+                break;
+            case "]":
+                break;
+            default:
+                keys[current_key].label += c;
+        }
+    }
+    var part = obj;
+    for (i = 0; i < keys.length; i++) {
+        var label = keys[i].label;
+        if (i == keys.length - 1) {
+            return part[label];
+        }
+        else {
+            if (part[label] === undefined) {
+                return undefined;
+            }
+            part = part[label];
+        }
+    }
+}
+export function setPath(obj, keyString, val) {
+    // allows for arrays, deep creates non-existant fields.
+    keyString = keyString.trim();
+    var keys = [{ label: "", type: "field", is_array: false }], current_key = 0;
+    for (var i = 0; i < keyString.length; i++) {
+        var c = keyString.charAt(i);
+        switch (c) {
+            case ".":
+                current_key++;
+                keys[current_key] = { label: "", type: "field", is_array: false };
+                break;
+            case "[":
+                keys[current_key].is_array = true;
+                current_key++;
+                keys[current_key] = { label: "", type: "index", is_array: false };
+                break;
+            case "]":
+                break;
+            default:
+                keys[current_key].label += c;
+        }
+    }
+    var part = obj;
+    for (i = 0; i < keys.length; i++) {
+        var label = keys[i].label;
+        if (i == keys.length - 1) {
+            part[label] = val;
+        }
+        else {
+            if (part[label] === undefined) {
+                // we need to create it for deep set!
+                if (keys[i].is_array) {
+                    part[label] = [];
+                }
+                else {
+                    part[label] = {};
+                }
+            }
+            part = part[label];
+        }
+    }
+}
 export const splitTrim = (string, separator) => {
     return string.split(separator).map((e) => e.trim());
 };
@@ -26,7 +105,10 @@ export const replaceAll2 = (str, match, replacement) => {
 export const findCache = (variable, vElem, returnType = false) => {
     if (!variable)
         return null;
-    const [baseVar, fullPath] = [splitTrim(variable, _G.OBJECT_SEPARATOR).shift(), variable.split(_G.OBJECT_SEPARATOR).splice(1, 1).join()];
+    const [baseVar, fullPath] = [
+        splitTrim(variable, _G.OBJECT_SEPARATOR).shift(),
+        variable.split(_G.OBJECT_SEPARATOR).splice(1, 1).join(),
+    ];
     const isObjectPath = fullPath !== "";
     while (vElem) {
         if (baseVar === vElem?.cache?.variableName) {
