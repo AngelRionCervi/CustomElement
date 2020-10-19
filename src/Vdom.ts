@@ -1,6 +1,6 @@
 import * as _H from "./helpers.js";
 import _G from "./_GLOBALS_.js";
-import StringParser, { getKeysUsed } from "./StringParser.js";
+import StringParser, { sanitizeVar } from "./StringParser.js";
 import NodeParser from "./NodeParser.js";
 import store from "./Store.js";
 
@@ -46,7 +46,6 @@ export default (_this: any, symbol: symbol) => {
                 if (value.includes(_G.DOUBLEDOT_DELIMITER)) {
                     value = value.split(_G.DOUBLEDOT_DELIMITER).shift() ?? "";
                 };
-                console.log(value)
                 nodeAttrs.push({
                     name,
                     value, // seal juste cet prop
@@ -67,6 +66,7 @@ export default (_this: any, symbol: symbol) => {
         },
         parseLoopAttr(attrVal: string): [string, string | undefined, string | undefined, string] {
             let [variableName, key] = _H.splitTrim(attrVal, _G.LOOP_IN_REGEX);
+            key = sanitizeVar(key);
             let indexName;
             let numIndexName;
             const match = variableName.match(_G.LOOP_BRACE_REGEXP);
@@ -99,6 +99,7 @@ export default (_this: any, symbol: symbol) => {
         },
         createVelem(node: HTMLElement, parent: vElem, cache: any): vElem {
             const { attributes, type, variableName, indexName, numIndexName, key } = this.getNodeInfo(node);
+            if (type === "loop") console.log(attributes)
             const vElem = {
                 attributes,
                 updateKeys: (attributes || []).map((at) => at.keysUsed).flat(),
@@ -165,7 +166,7 @@ export default (_this: any, symbol: symbol) => {
                 vElem.node.innerHTML = "";
                 return;
             }
-
+            console.log(key)
             const objToLoop = _H.resolvePath(store.__get(symbol), key);
 
             Object.entries(objToLoop).forEach(([key, value], index) => {
@@ -265,10 +266,6 @@ export default (_this: any, symbol: symbol) => {
                 if (corVelem[u]?.cache?.display === false) continue;
                 const loopItems = this.getAllChildrenFlat(corVelem[u].children);
                 loopItems.forEach((loopItem: vElem) => {
-                    // const parentLoop = this.findParentLoopBody(loopItem);
-                    // if (parentLoop) {
-                    //     loopItem.node.innerHTML = parentLoop.vElem.cache[parentLoop.type];
-                    // }
                     loopItem.parent.node.appendChild(loopItem.node);
                 });
                 const concernedIfs = this.getVChildren("if", null, corVelem[u].children);
@@ -309,7 +306,6 @@ export default (_this: any, symbol: symbol) => {
         },
         update(key: string, val: any): void {
             _H.setPath(store.__get(symbol), key, val);
-            console.log("update nbr : ", _H.resolvePath(store.__get(symbol), key))
 
             const vChildrenByKey: vElem[] = this.getVChildren(null, key);
             vChildrenByKey.forEach((vChild) => {

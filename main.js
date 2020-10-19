@@ -32,7 +32,7 @@ createComp("simple-counter", ({ createState, register }) => {
                 <img src="{{ images[0].src }}"/>
             </div>
         </div>
-        <div loop="$img in images">{{ $img.src }}</div>
+        <div loop="($img, $key, $index) in images">{{ $img.src }}</div>
     `;
 });
 

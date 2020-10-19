@@ -142,9 +142,6 @@ export const parseVar = (state, vElem, strToParse) => {
     });
     return strToParse;
 };
-export const getVarName = (str) => {
-    return _G.TEXT_BIND_REGEXP.exec(str)?.[1] ?? "";
-};
 export const getVarNameUsed = (str) => {
     if (!str)
         return "";
