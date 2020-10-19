@@ -1,12 +1,12 @@
 import _G from "./_GLOBALS_.js";
-import StringParser, { parseTextWithVar } from "./StringParser.js";
+import StringParser from "./StringParser.js";
 import * as _H from "./helpers.js";
 export default (_this, state) => {
     return {
         parse(vElem) {
             const { attributes, node, cache, type } = vElem;
             if (type === "text" && cache.hasOwnProperty("baseText")) {
-                node.textContent = this.parseTextContent(cache.baseText, attributes, vElem);
+                node.textContent = _H.parseVar(state, vElem, cache.baseText);
                 return;
             }
             if (attributes.length === 0)
@@ -21,7 +21,7 @@ export default (_this, state) => {
                             node.className = this.parseClasses(att.value, node.className, vElem);
                             break;
                         default:
-                            node.setAttribute(att.name, parseTextWithVar(state, vElem, att.value));
+                            node.setAttribute(att.name, _H.parseVar(state, vElem, att.value));
                             break;
                     }
                 }
@@ -39,14 +39,6 @@ export default (_this, state) => {
                     }
                     return acc;
                 }, ""));
-        },
-        parseTextContent(baseText, attributes, vElem) {
-            return attributes.reduce((acc, res) => {
-                // refactor pour utiliser parseTextContent
-                const val = _H.getValueFromStrVar(state, vElem, parseTextWithVar(state, vElem, res.key));
-                console.log("ffff", parseTextWithVar(state, vElem, res.key));
-                return _H.replaceAll2(acc, res.match, val);
-            }, baseText);
         },
         createEventListener(att, node, vElem) {
             const eventType = att.name.replace("-", "").toLowerCase();

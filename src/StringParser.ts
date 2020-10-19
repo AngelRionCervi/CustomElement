@@ -61,12 +61,13 @@ export const sanitizeVar = (str: string): string => {
     return _H.replaceAll2(str, ["(", "{", "}", ")", " "], "");
 };
 
-export const getKeysUsed = (str: string): string[] => {
+export const isVar = (str: string): boolean => {
+    return !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str) && !fnInvRegex.test(str);
+};
+export const isLoop = (str: string): boolean => str.includes(IN) && !fnInvRegex.test(str);
+
+export const getKeysUsed = (str: string | null): string[] => {
     if (!str) return [];
-    const isVar = (str: string): boolean => {
-        return !numberRegexp.test(str) && !stringRegexp.test(str) && !fullArRegex.test(str) && !fnInvRegex.test(str);
-    };
-    const isLoop = (str: string): boolean => str.includes(IN) && !fnInvRegex.test(str);
     const keys: string[] = [];
     if (!fnInvRegex.test(str)) {
         _H.splitTrim(str, fullArRegex).forEach((val: string) => {
@@ -78,14 +79,16 @@ export const getKeysUsed = (str: string): string[] => {
 };
 
 export const parseTextWithVar = (state: any, vElem: vElem, str: string): string => {
-    const matches: RegExpMatchArray[] = [...str.matchAll(_G.ARRAY_INDEX_REGEXP), ...str.matchAll(_G.TEXT_BIND_REGEXP)];
-    return matches.reduce((newStr: string, match: RegExpMatchArray) => {
-        const val = _H.getValueFromStrVar(state, vElem, match[1]);
-        if (match[0].charAt(0) === "[" && match[0].charAt(match[0].length - 1) === "]") {
-            return _H.replaceAll2(newStr, match[1], val);
-        }
+    const matchArrayIndex: RegExpMatchArray[] = [...str.matchAll(_G.ARRAY_INDEX_REGEXP)];
+    const parsedIndexStr = matchArrayIndex.reduce((newStr: string, match: RegExpMatchArray): string => {
+        const val = _H.getValueFromStrVar(state, vElem, match[1].trim())
+        return _H.replaceAll2(newStr, match[1], val);
+    }, str)
+    const matchBinds: RegExpMatchArray[] = [...parsedIndexStr.matchAll(_G.TEXT_BIND_REGEXP)];
+    return matchBinds.reduce((newStr: string, match: RegExpMatchArray) => {
+        const val = _H.getValueFromStrVar(state, vElem, match[1].trim());
         return _H.replaceAll2(newStr, match[0], val);
-    }, str);
+    }, parsedIndexStr);
 };
 
 export default (_state: any, vElem: vElem) => {
@@ -116,8 +119,9 @@ export default (_state: any, vElem: vElem) => {
                 let res = split[u];
                 if (isVar(nakedExp) && !globalPrims.includes(_H.replaceAll2(split[u], NOT, ""))) {
                     const varVal = _H.getValueFromStrVar(_state, vElem, nakedExp);
+                    
                     //const varVal = _H.resolvePath(_state, nakedExp);
-                    res = ((isBoolified(split[u]) ? !varVal : varVal) || false).toString();
+                    res = ((isBoolified(split[u]) ? !varVal : varVal) ?? false).toString();
                 }
                 split[u] = res;
                 // second translate strings to js values
@@ -139,7 +143,8 @@ export default (_state: any, vElem: vElem) => {
                     }
                 } else {
                     if (!numberRegexp.test(split[u]) && /\d/.test(split[u])) {
-                        split[u] = computeNumber(split[u]);
+                       // split[u] = computeNumber(split[u]);
+                       
                     }
                     if (numberRegexp.test(split[u])) {
                         split[u] = parseFloat(split[u]);
@@ -175,6 +180,7 @@ export default (_state: any, vElem: vElem) => {
             }
             const notMatches: string = (exp.match(notRegex) || []).join();
             const res: any = notMatches.length % 2 === 0 ? split[0] : !split[0];
+         
             return res;
         },
         computeIfBlock(str: string): any {

@@ -7,7 +7,7 @@ export default (_this: any, state: any) => {
         parse(vElem: vElem): any {
             const { attributes, node, cache, type } = vElem;
             if (type === "text" && cache.hasOwnProperty("baseText")) {
-                node.textContent = this.parseTextContent(cache.baseText, attributes, vElem);
+                node.textContent = _H.parseVar(state, vElem, cache.baseText);
                 return;
             }
             if (attributes.length === 0) return node;
@@ -20,7 +20,7 @@ export default (_this: any, state: any) => {
                             node.className = this.parseClasses(att.value, node.className, vElem);
                             break;
                         default:
-                            node.setAttribute(att.name, parseTextWithVar(state, vElem, att.value));
+                            node.setAttribute(att.name, _H.parseVar(state, vElem, att.value));
                             break;
                     }
                 }
@@ -40,15 +40,6 @@ export default (_this: any, state: any) => {
                     return acc;
                 }, "")
             );
-        },
-        parseTextContent(baseText: string, attributes: any[], vElem: vElem): string {
-            
-            return attributes.reduce((acc, res) => {
-                // refactor pour utiliser parseTextContent
-                const val = _H.getValueFromStrVar(state, vElem, parseTextWithVar(state, vElem, res.key));
-                console.log("ffff", parseTextWithVar(state, vElem, res.key))
-                return _H.replaceAll2(acc, res.match, val);
-            }, baseText);
         },
         createEventListener(att: any, node: any, vElem: vElem): void {
             const eventType: string = att.name.replace("-", "").toLowerCase();

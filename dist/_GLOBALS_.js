@@ -51,4 +51,5 @@ const options = {
     LOOP_VAR_REGEX: /\$[.a-zA-Z0-9]+/g,
     RANGE_LOOP_DOTS: "..",
 };
+//(<[=>]?|==|>=?|\&\&|\|\|)
 export default options;

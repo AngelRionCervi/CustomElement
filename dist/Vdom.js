@@ -1,6 +1,6 @@
 import * as _H from "./helpers.js";
 import _G from "./_GLOBALS_.js";
-import StringParser, { getKeysUsed } from "./StringParser.js";
+import StringParser from "./StringParser.js";
 import NodeParser from "./NodeParser.js";
 import store from "./Store.js";
 export default (_this, symbol) => {
@@ -22,7 +22,7 @@ export default (_this, symbol) => {
         getNodeInfo(node) {
             if (node.nodeType === 3) {
                 return {
-                    attributes: this.getTextBind(node),
+                    attributes: [{ keysUsed: _H.getVarNameUsed(node.textContent) }],
                     type: "text",
                     variableName: null,
                     indexName: null,
@@ -38,23 +38,19 @@ export default (_this, symbol) => {
             }
             return { attributes, type, variableName, indexName, numIndexName, key };
         },
-        getTextBind(node) {
-            if (!node.textContent)
-                return null;
-            const matches = [...node.textContent.matchAll(_G.TEXT_BIND_REGEXP), ...node.textContent.matchAll(_G.ARRAY_INDEX_REGEXP)];
-            const results = matches.reduce((acc, match) => {
-                return [...acc, { match: match[0], key: match[1].trim(), keysUsed: [match[1].trim()] }];
-            }, []);
-            return results;
-        },
         getAttributes(node) {
             const nodeAttrs = [];
             for (let u = 0; u < node.attributes.length; u++) {
-                const { value, name } = node.attributes[u];
+                let { value, name } = node.attributes[u];
+                if (value.includes(_G.DOUBLEDOT_DELIMITER)) {
+                    value = value.split(_G.DOUBLEDOT_DELIMITER).shift() ?? "";
+                }
+                ;
+                console.log(value);
                 nodeAttrs.push({
                     name,
                     value,
-                    keysUsed: getKeysUsed(value.split(":").shift() || ""),
+                    keysUsed: _H.getVarNameUsed(value),
                 });
             }
             return nodeAttrs;
@@ -144,7 +140,7 @@ export default (_this, symbol) => {
         buildLoopChildren(vElem, key, indexName, variableName, numIndexName) {
             if (key.includes(_G.RANGE_LOOP_DOTS)) {
                 const [start, finish] = _H.splitTrim(key, _G.RANGE_LOOP_DOTS).map((n) => parseInt(n));
-                for (let u = start; u < finish + 1; u++) {
+                for (let u = start; u < finish; u++) {
                     vElem.children = [
                         ...vElem.children,
                         ...this.buildVdom(vElem.node.cloneNode(true), vElem, {
@@ -288,6 +284,9 @@ export default (_this, symbol) => {
                     vElem.node.innerHTML = "";
                 }
                 const concernedLoops = this.getVChildren("loop", null, vElem.children);
+                concernedLoops.forEach((cloop) => {
+                    cloop.cache = { ...cloop.cache, display: vElem.condition };
+                });
                 this.renderLoops(concernedLoops);
             });
         },
@@ -306,6 +305,11 @@ export default (_this, symbol) => {
         },
         update(key, val) {
             _H.setPath(store.__get(symbol), key, val);
+            console.log("update nbr : ", _H.resolvePath(store.__get(symbol), key));
+            const vChildrenByKey = this.getVChildren(null, key);
+            vChildrenByKey.forEach((vChild) => {
+                NodeParser(_this, store.__get(symbol)).parse(vChild);
+            });
             const loopsToRerender = this.getVChildren("loop", key);
             loopsToRerender.forEach((loopBlock) => {
                 loopBlock = this.rebuildLoop(loopBlock, key);
@@ -316,10 +320,6 @@ export default (_this, symbol) => {
                 ifBlock = this.rebuildIf(ifBlock);
             });
             this.renderIfs(ifsToRerender);
-            const vChildrenByKey = this.getVChildren(null, key);
-            vChildrenByKey.forEach((vChild) => {
-                NodeParser(_this, store.__get(symbol)).parse(vChild);
-            });
         },
     };
 };

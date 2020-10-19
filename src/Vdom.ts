@@ -23,7 +23,7 @@ export default (_this: any, symbol: symbol) => {
         getNodeInfo(node: HTMLElement): nodeInfo {
             if (node.nodeType === 3) {
                 return {
-                    attributes: this.getTextBind(node),
+                    attributes: [{ keysUsed: _H.getVarNameUsed(node.textContent) }],
                     type: "text",
                     variableName: null,
                     indexName: null,
@@ -39,22 +39,18 @@ export default (_this: any, symbol: symbol) => {
             }
             return { attributes, type, variableName, indexName, numIndexName, key };
         },
-        getTextBind(node: HTMLElement): any[] | null {
-            if (!node.textContent) return null;
-            const matches = [...node.textContent.matchAll(_G.TEXT_BIND_REGEXP), ...node.textContent.matchAll(_G.ARRAY_INDEX_REGEXP)];
-            const results = matches.reduce((acc: any[], match: RegExpMatchArray) => {
-                return [...acc, { match: match[0], key: match[1].trim(), keysUsed: [match[1].trim()] }];
-            }, []);
-            return results;
-        },
         getAttributes(node: HTMLElement): any[] {
             const nodeAttrs: any[] = [];
             for (let u = 0; u < node.attributes.length; u++) {
-                const { value, name } = node.attributes[u];
+                let { value, name } = node.attributes[u];
+                if (value.includes(_G.DOUBLEDOT_DELIMITER)) {
+                    value = value.split(_G.DOUBLEDOT_DELIMITER).shift() ?? "";
+                };
+                console.log(value)
                 nodeAttrs.push({
                     name,
                     value, // seal juste cet prop
-                    keysUsed: getKeysUsed(value.split(":").shift() || ""),
+                    keysUsed: _H.getVarNameUsed(value),
                 });
             }
             return nodeAttrs;
@@ -153,7 +149,7 @@ export default (_this: any, symbol: symbol) => {
                     number,
                     number
                 ];
-                for (let u = start; u < finish + 1; u++) {
+                for (let u = start; u < finish; u++) {
                     vElem.children = [
                         ...vElem.children,
                         ...this.buildVdom(vElem.node.cloneNode(true), vElem, {
@@ -169,7 +165,9 @@ export default (_this: any, symbol: symbol) => {
                 vElem.node.innerHTML = "";
                 return;
             }
+
             const objToLoop = _H.resolvePath(store.__get(symbol), key);
+
             Object.entries(objToLoop).forEach(([key, value], index) => {
                 vElem.children = [
                     ...vElem.children,
@@ -290,6 +288,9 @@ export default (_this: any, symbol: symbol) => {
                     vElem.node.innerHTML = "";
                 }
                 const concernedLoops: vElem[] = this.getVChildren("loop", null, vElem.children);
+                concernedLoops.forEach((cloop) => {
+                    cloop.cache = { ...cloop.cache, display: vElem.condition };
+                });
                 this.renderLoops(concernedLoops);
             });
         },
@@ -308,6 +309,13 @@ export default (_this: any, symbol: symbol) => {
         },
         update(key: string, val: any): void {
             _H.setPath(store.__get(symbol), key, val);
+            console.log("update nbr : ", _H.resolvePath(store.__get(symbol), key))
+
+            const vChildrenByKey: vElem[] = this.getVChildren(null, key);
+            vChildrenByKey.forEach((vChild) => {
+                NodeParser(_this, store.__get(symbol)).parse(vChild);
+            });
+
             const loopsToRerender: vElem[] = this.getVChildren("loop", key);
             loopsToRerender.forEach((loopBlock) => {
                 loopBlock = this.rebuildLoop(loopBlock, key);
@@ -319,11 +327,6 @@ export default (_this: any, symbol: symbol) => {
                 ifBlock = this.rebuildIf(ifBlock);
             });
             this.renderIfs(ifsToRerender);
-
-            const vChildrenByKey: vElem[] = this.getVChildren(null, key);
-            vChildrenByKey.forEach((vChild) => {
-                NodeParser(_this, store.__get(symbol)).parse(vChild);
-            });
         },
     };
 };

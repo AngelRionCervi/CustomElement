@@ -2,23 +2,37 @@ import { createComp } from "./dist/EZC.js";
 import gState from "./state.js";
 
 createComp("simple-counter", ({ createState, register }) => {
-    const { setState } = createState({
+    const { setState, state } = createState({
         count: 0,
         bgSrc: "https://i0.wp.com/www.wushujia.fr/wp-content/uploads/2016/03/js-logo.png?ssl=1",
-        images: ["https://i0.wp.com/www.wushujia.fr/wp-content/uploads/2016/03/js-logo.png?ssl=1"]
+        images: [{src: "https://i0.wp.com/www.wushujia.fr/wp-content/uploads/2016/03/js-logo.png?ssl=1"}],
     });
-    
+
     register({
         addImage() {
-            console.log("hey")
+            setState("bgSrc", "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/256_Php_logo-512.png")
+            setState("images", ["https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/256_Php_logo-512.png"])
+        },
+        swapImage() {
+            setState("images", [{src: "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/256_Php_logo-512.png"}]);
+            console.log(state.images)
         }
-    })
+    });
 
     return /* html */ `
         <p>{{count}}</p>
         <button on-click="setState('count', count + 1)">add</button>
-        <img src="{{ bgSrc }}">
-        <div loop="$n in 0..10"> {{ images[$n] }} </div>
+        <button on-click="setState('count', count - 1)">decrease</button>
+        <button on-click="swapImage">swap</button>
+        <img src="{{ bgSrc }}"/>
+        <p>{{images[0].src}}</p>
+        <div if="{{ count }} > 5">
+            yoyo
+            <div loop="$i in 0..5">
+                <img src="{{ images[0].src }}"/>
+            </div>
+        </div>
+        <div loop="$img in images">{{ $img.src }}</div>
     `;
 });
 
@@ -26,7 +40,7 @@ createComp("t-comp", ({ createState, register, useGlobal, cycle }) => {
     const initState = {
         count: useGlobal("count"),
         name: "hola",
-        fruits: [{ name: "melon" }, {name: "berry"}],
+        fruits: [{ name: ["melon"] }, { name: ["berry"] }],
         ties: ["blue", "red"],
         increaseGlobal() {
             gState.increaseALot();
@@ -86,7 +100,7 @@ createComp("t-comp", ({ createState, register, useGlobal, cycle }) => {
             <div loop="($item, $inde, $ii) in fruits">
                 <p>hey boyyyyy {{$item.name}} {{count}} {{ $ii }}</p>
                 <div loop="($ite, $index) in ties">
-                    <br>hh {{$ite}} {{$index}} {{$ite}}
+                    <br>hh {{$ite}} {{$index}}
                     <div if="$ite === 'blue'" class-bind="$ite !== 'blue' : display-none">HIIIIIIIIIIIIII</div>
                 </div>
                 <div loop-index="$inde"></div>
@@ -94,3 +108,4 @@ createComp("t-comp", ({ createState, register, useGlobal, cycle }) => {
         </div>
     `;
 });
+//<div loop="$n in {{ images }}">{{images}}</div>
