@@ -26,7 +26,7 @@ createComp("simple-counter", ({ createState, register }) => {
         <button on-click="swapImage">swap</button>
         <img src="{{ bgSrc }}"/>
         <p>{{images[0].src}}</p>
-        <div if="{{ count }} > 5">
+        <div if="{{ count }} >= 5">
             yoyo
             <div loop="$i in 0..5">
                 <img src="{{ images[0].src }}"/>

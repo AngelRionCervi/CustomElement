@@ -24,9 +24,7 @@ const NOT: string = "!";
 const stringDelimiter: string = "'";
 const innerExpBlockRegex: RegExp = /\(([^()]*)\)/g;
 const notRegex: RegExp = /!+/g;
-const comparisonRegexp: RegExp = new RegExp(
-    `(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`
-); // DOESN'T WORK FOR MORE_OR_EQUAL AND LESS_OR_EQUAL
+const comparisonRegexp: RegExp = /(<[=>]?|==|>=?|\&\&|\|\|)/g 
 const arSplitRegex: RegExp = /(\d[^*\/%+-]*[*\/%+-])/g;
 const arOpMatchRegex: RegExp = /([+\-*\/%])/;
 const fullArRegex: RegExp = /([+\-*\/%=<>&|])/;

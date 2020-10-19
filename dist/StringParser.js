@@ -23,7 +23,7 @@ const NOT = "!";
 const stringDelimiter = "'";
 const innerExpBlockRegex = /\(([^()]*)\)/g;
 const notRegex = /!+/g;
-const comparisonRegexp = new RegExp(`(${EQUAL}|${NOT_EQUAL}|${MORE}|${LESS}|${MORE_OR_EQUAL}|${LESS_OR_EQUAL})`); // DOESN'T WORK FOR MORE_OR_EQUAL AND LESS_OR_EQUAL
+const comparisonRegexp = /(<[=>]?|==|>=?|\&\&|\|\|)/g;
 const arSplitRegex = /(\d[^*\/%+-]*[*\/%+-])/g;
 const arOpMatchRegex = /([+\-*\/%])/;
 const fullArRegex = /([+\-*\/%=<>&|])/;
