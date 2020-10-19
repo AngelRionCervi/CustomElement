@@ -14,7 +14,7 @@ createComp("simple-counter", ({ createState, register }) => {
             setState("images", ["https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/256_Php_logo-512.png"])
         },
         swapImage() {
-            setState("images", [{src: "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/256_Php_logo-512.png"}]);
+            setState("images", [...state.images, {src: "https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/256_Php_logo-512.png"}]);
             console.log(state.images)
         }
     });
@@ -29,7 +29,7 @@ createComp("simple-counter", ({ createState, register }) => {
         <div if="{{ count }} >= 5">
             yoyo
             <div loop="$i in 0..5">
-                <img src="{{ images[0].src }}"/>
+                <img src="{{ images[$i].src }}"/>
             </div>
         </div>
         <div loop="($img, $key, $index) in images">{{ $img.src }}</div>
